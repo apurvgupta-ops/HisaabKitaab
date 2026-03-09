@@ -1,0 +1,119 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  lint-and-typecheck:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build shared package
+        run: npm run build:shared
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+        working-directory: packages/backend
+
+      - name: Type check backend
+        run: npx tsc --noEmit
+        working-directory: packages/backend
+
+      - name: Type check frontend
+        run: npx tsc --noEmit
+        working-directory: packages/frontend
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: splitwise
+          POSTGRES_PASSWORD: splitwise_test
+          POSTGRES_DB: splitwise_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://splitwise:splitwise_test@localhost:5432/splitwise_test
+      REDIS_URL: redis://localhost:6379
+      JWT_SECRET: test-jwt-secret
+      JWT_REFRESH_SECRET: test-jwt-refresh-secret
+      NODE_ENV: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build shared package
+        run: npm run build:shared
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+        working-directory: packages/backend
+
+      - name: Run database migrations
+        run: npx prisma migrate deploy
+        working-directory: packages/backend
+
+      - name: Run tests
+        run: npm test
+
+  build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build backend image
+        run: docker build -f packages/backend/Dockerfile -t splitwise-backend:${{ github.sha }} .
+
+      - name: Build frontend image
+        run: docker build -f packages/frontend/Dockerfile -t splitwise-frontend:${{ github.sha }} .
