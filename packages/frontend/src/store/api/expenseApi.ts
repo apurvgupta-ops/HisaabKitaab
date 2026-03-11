@@ -1,11 +1,16 @@
 import type {
-  ApiResponse,
-  PaginatedResponse,
   ExpenseWithDetails,
   ExpenseFilters,
-  GroupBalanceSummary,
+  PaginationMeta,
 } from '@splitwise/shared';
 import { apiSlice } from './apiSlice';
+
+export interface BalanceEntry {
+  user: { id: string; name: string; email: string; avatar: string | null };
+  paid: number;
+  owed: number;
+  balance: number;
+}
 
 interface CreateExpenseRequest {
   groupId: string;
@@ -32,7 +37,7 @@ interface UpdateExpenseRequest extends Partial<CreateExpenseRequest> {
 export const expenseApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getGroupExpenses: builder.query<
-      PaginatedResponse<ExpenseWithDetails>,
+      { data: ExpenseWithDetails[]; pagination: PaginationMeta },
       { groupId: string } & ExpenseFilters
     >({
       query: ({ groupId, ...params }) => ({
@@ -42,13 +47,13 @@ export const expenseApi = apiSlice.injectEndpoints({
       providesTags: ['Expense'],
     }),
 
-    getExpense: builder.query<ApiResponse<ExpenseWithDetails>, string>({
+    getExpense: builder.query<ExpenseWithDetails, string>({
       query: (id) => `/api/expenses/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Expense', id }],
     }),
 
     createExpense: builder.mutation<
-      ApiResponse<ExpenseWithDetails>,
+      ExpenseWithDetails,
       CreateExpenseRequest
     >({
       query: (body) => ({
@@ -60,7 +65,7 @@ export const expenseApi = apiSlice.injectEndpoints({
     }),
 
     updateExpense: builder.mutation<
-      ApiResponse<ExpenseWithDetails>,
+      ExpenseWithDetails,
       UpdateExpenseRequest
     >({
       query: ({ id, ...body }) => ({
@@ -79,7 +84,7 @@ export const expenseApi = apiSlice.injectEndpoints({
       invalidatesTags: ['Expense', 'Settlement'],
     }),
 
-    getGroupBalances: builder.query<ApiResponse<GroupBalanceSummary>, string>({
+    getGroupBalances: builder.query<BalanceEntry[], string>({
       query: (groupId) => `/api/expenses/group/${groupId}/balances`,
       providesTags: (_result, _error, groupId) => [
         { type: 'Expense', id: `balances-${groupId}` },

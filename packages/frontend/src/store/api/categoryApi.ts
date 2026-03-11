@@ -1,4 +1,4 @@
-import type { ApiResponse, Category } from '@splitwise/shared';
+import type { Category } from '@splitwise/shared';
 import { apiSlice } from './apiSlice';
 
 interface CreateCategoryRequest {
@@ -14,13 +14,13 @@ interface UpdateCategoryRequest extends Partial<CreateCategoryRequest> {
 
 export const categoryApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getCategories: builder.query<ApiResponse<Category[]>, void>({
+    getCategories: builder.query<Category[], void>({
       query: () => '/api/categories',
       providesTags: ['Category'],
     }),
 
     createCategory: builder.mutation<
-      ApiResponse<Category>,
+      Category,
       CreateCategoryRequest
     >({
       query: (body) => ({
@@ -32,7 +32,7 @@ export const categoryApi = apiSlice.injectEndpoints({
     }),
 
     updateCategory: builder.mutation<
-      ApiResponse<Category>,
+      Category,
       UpdateCategoryRequest
     >({
       query: ({ id, ...body }) => ({

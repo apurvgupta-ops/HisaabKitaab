@@ -49,7 +49,7 @@ export function CreateBudgetDialog({
   const [updateBudget, { isLoading: isUpdating }] = useUpdateBudgetMutation();
   const { data: categoriesData } = useGetCategoriesQuery();
 
-  const categories = categoriesData?.data ?? [];
+  const categories = categoriesData ?? [];
   const isEditing = !!editingBudget;
   const isLoading = isCreating || isUpdating;
 

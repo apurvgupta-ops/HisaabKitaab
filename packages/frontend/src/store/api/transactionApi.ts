@@ -1,9 +1,8 @@
 import type {
-  ApiResponse,
-  PaginatedResponse,
   Transaction,
   TransactionFilters,
   TransactionSummary,
+  PaginationMeta,
 } from '@splitwise/shared';
 import { apiSlice } from './apiSlice';
 
@@ -25,7 +24,7 @@ interface UpdateTransactionRequest extends Partial<CreateTransactionRequest> {
 export const transactionApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getTransactions: builder.query<
-      PaginatedResponse<Transaction>,
+      { data: Transaction[]; pagination: PaginationMeta },
       TransactionFilters | void
     >({
       query: (params) => ({
@@ -35,13 +34,13 @@ export const transactionApi = apiSlice.injectEndpoints({
       providesTags: ['Transaction'],
     }),
 
-    getTransaction: builder.query<ApiResponse<Transaction>, string>({
+    getTransaction: builder.query<Transaction, string>({
       query: (id) => `/api/transactions/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Transaction', id }],
     }),
 
     getTransactionSummary: builder.query<
-      ApiResponse<TransactionSummary>,
+      TransactionSummary,
       { startDate?: string; endDate?: string } | void
     >({
       query: (params) => ({
@@ -52,7 +51,7 @@ export const transactionApi = apiSlice.injectEndpoints({
     }),
 
     createTransaction: builder.mutation<
-      ApiResponse<Transaction>,
+      Transaction,
       CreateTransactionRequest
     >({
       query: (body) => ({
@@ -64,7 +63,7 @@ export const transactionApi = apiSlice.injectEndpoints({
     }),
 
     updateTransaction: builder.mutation<
-      ApiResponse<Transaction>,
+      Transaction,
       UpdateTransactionRequest
     >({
       query: ({ id, ...body }) => ({

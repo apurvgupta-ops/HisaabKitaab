@@ -90,7 +90,7 @@ const quickActions = [
   {
     label: "Add Expense",
     icon: Plus,
-    href: "/dashboard",
+    href: "/groups",
     variant: "default" as const,
   },
   {
@@ -102,7 +102,7 @@ const quickActions = [
   {
     label: "Record Payment",
     icon: CreditCard,
-    href: "/dashboard",
+    href: "/transactions",
     variant: "outline" as const,
   },
 ];
@@ -133,19 +133,18 @@ export default function DashboardPage() {
 
       {/* Summary cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {summaryCards.map((card, index) => {
+        {summaryCards.map((card) => {
           const Icon = card.icon;
           return (
             <Card
               key={card.title}
-              className="group transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
-              style={{ animationDelay: `${index * 75}ms` }}
+              className="group hover:shadow-md"
             >
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {card.title}
                 </CardTitle>
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 transition-colors group-hover:bg-primary/15">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
                   <Icon className="h-4 w-4 text-primary" />
                 </div>
               </CardHeader>
@@ -190,7 +189,7 @@ export default function DashboardPage() {
                 <Button
                   key={action.label}
                   variant={action.variant}
-                  className="w-full justify-start gap-3 transition-all duration-200"
+                  className="w-full justify-start gap-3"
                   size="lg"
                   asChild
                 >
@@ -244,9 +243,11 @@ export default function DashboardPage() {
                 <p className="mt-1 max-w-[220px] text-xs text-muted-foreground">
                   Add an expense or create a group to get started!
                 </p>
-                <Button size="sm" className="mt-4 gap-2">
-                  <Plus className="h-4 w-4" />
-                  Add Expense
+                <Button size="sm" className="mt-4 gap-2" asChild>
+                  <Link href="/groups">
+                    <Plus className="h-4 w-4" />
+                    Add Expense
+                  </Link>
                 </Button>
               </div>
             ) : (
@@ -254,7 +255,7 @@ export default function DashboardPage() {
                 {recentActivity.map((activity) => (
                   <div
                     key={activity.id}
-                    className="flex items-center gap-4 rounded-lg border p-3 transition-colors duration-200 hover:bg-accent/50"
+                    className="flex items-center gap-4 rounded-lg border p-3 hover:bg-accent/50"
                   >
                     <Avatar className="h-10 w-10 shrink-0">
                       <AvatarFallback className="bg-primary/10 text-primary">

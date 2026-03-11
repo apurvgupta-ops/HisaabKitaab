@@ -5,27 +5,29 @@ import {
   TrendingUp,
   Wallet,
 } from "lucide-react";
-import type { GroupBalanceSummary, DebtEdge } from "@splitwise/shared";
+import type { DebtEdge } from "@splitwise/shared";
 import { formatCurrency } from "@splitwise/shared";
+import type { BalanceEntry } from "@/store/api/expenseApi";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 
 interface BalanceCardsProps {
-  balanceSummary: GroupBalanceSummary;
+  balances: BalanceEntry[];
+  simplifiedDebts: DebtEdge[];
   currency: string;
   onSettleUp?: (debt: DebtEdge) => void;
 }
 
 export function BalanceCards({
-  balanceSummary,
+  balances,
+  simplifiedDebts,
   currency,
   onSettleUp,
 }: BalanceCardsProps) {
-  const { balances, simplifiedDebts, totalExpenses } = balanceSummary;
+  const totalExpenses = balances.reduce((sum, b) => sum + b.paid, 0);
 
   return (
     <div className="space-y-6">
@@ -49,11 +51,11 @@ export function BalanceCards({
           Member Balances
         </h3>
         <div className="grid gap-3 sm:grid-cols-2">
-          {balances.map((balance) => {
-            const isPositive = balance.balance >= 0;
+          {balances.map((entry) => {
+            const isPositive = entry.balance >= 0;
             return (
               <Card
-                key={balance.userId}
+                key={entry.user.id}
                 className={`border-l-4 ${
                   isPositive ? "border-l-emerald-500" : "border-l-red-500"
                 }`}
@@ -67,15 +69,16 @@ export function BalanceCards({
                           : "bg-red-100 text-red-700"
                       }`}
                     >
-                      {balance.userName[0]?.toUpperCase() ?? "?"}
+                      {entry.user.name[0]?.toUpperCase() ?? "?"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">
-                      {balance.userName}
+                      {entry.user.name}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {isPositive ? "is owed" : "owes"}
+                      Paid {formatCurrency(entry.paid, currency)} · Owes{" "}
+                      {formatCurrency(entry.owed, currency)}
                     </p>
                   </div>
                   <div className="text-right">
@@ -85,8 +88,11 @@ export function BalanceCards({
                       }`}
                     >
                       {isPositive ? "+" : ""}
-                      {formatCurrency(balance.balance, currency)}
+                      {formatCurrency(entry.balance, currency)}
                     </span>
+                    <p className="text-xs text-muted-foreground">
+                      {isPositive ? "is owed" : "owes"}
+                    </p>
                   </div>
                 </CardContent>
               </Card>
@@ -105,7 +111,7 @@ export function BalanceCards({
             {simplifiedDebts.map((debt, idx) => (
               <div
                 key={`${debt.from}-${debt.to}-${idx}`}
-                className="flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-accent/50"
+                className="flex items-center gap-3 rounded-lg border p-3 hover:bg-accent/50"
               >
                 <Avatar className="h-8 w-8">
                   <AvatarFallback className="bg-red-100 text-red-700 text-xs">

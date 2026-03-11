@@ -1,5 +1,4 @@
 import type {
-  ApiResponse,
   Group,
   GroupWithMembers,
 } from '@splitwise/shared';
@@ -9,6 +8,11 @@ interface CreateGroupRequest {
   name: string;
   type: string;
   currency?: string;
+  settings?: {
+    simplifyDebts?: boolean;
+    defaultSplitType?: string;
+    allowSettlements?: boolean;
+  };
 }
 
 interface UpdateGroupRequest {
@@ -23,25 +27,30 @@ interface UpdateGroupRequest {
   };
 }
 
-interface MemberRequest {
+interface AddMemberRequest {
+  groupId: string;
+  email: string;
+  role?: string;
+}
+
+interface RemoveMemberRequest {
   groupId: string;
   userId: string;
-  role?: string;
 }
 
 export const groupApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getGroups: builder.query<ApiResponse<Group[]>, void>({
+    getGroups: builder.query<Group[], void>({
       query: () => '/api/groups',
       providesTags: ['Group'],
     }),
 
-    getGroup: builder.query<ApiResponse<GroupWithMembers>, string>({
+    getGroup: builder.query<GroupWithMembers, string>({
       query: (id) => `/api/groups/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Group', id }],
     }),
 
-    createGroup: builder.mutation<ApiResponse<Group>, CreateGroupRequest>({
+    createGroup: builder.mutation<Group, CreateGroupRequest>({
       query: (body) => ({
         url: '/api/groups',
         method: 'POST',
@@ -50,10 +59,10 @@ export const groupApi = apiSlice.injectEndpoints({
       invalidatesTags: ['Group'],
     }),
 
-    updateGroup: builder.mutation<ApiResponse<Group>, UpdateGroupRequest>({
+    updateGroup: builder.mutation<Group, UpdateGroupRequest>({
       query: ({ id, ...body }) => ({
         url: `/api/groups/${id}`,
-        method: 'PATCH',
+        method: 'PUT',
         body,
       }),
       invalidatesTags: (_result, _error, { id }) => [{ type: 'Group', id }],
@@ -67,7 +76,7 @@ export const groupApi = apiSlice.injectEndpoints({
       invalidatesTags: ['Group'],
     }),
 
-    addMember: builder.mutation<ApiResponse<GroupWithMembers>, MemberRequest>({
+    addMember: builder.mutation<GroupWithMembers, AddMemberRequest>({
       query: ({ groupId, ...body }) => ({
         url: `/api/groups/${groupId}/members`,
         method: 'POST',
@@ -78,7 +87,7 @@ export const groupApi = apiSlice.injectEndpoints({
       ],
     }),
 
-    removeMember: builder.mutation<void, MemberRequest>({
+    removeMember: builder.mutation<void, RemoveMemberRequest>({
       query: ({ groupId, userId }) => ({
         url: `/api/groups/${groupId}/members/${userId}`,
         method: 'DELETE',

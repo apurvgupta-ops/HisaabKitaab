@@ -1,4 +1,3 @@
-import type { ApiResponse } from '@splitwise/shared';
 import { apiSlice } from './apiSlice';
 
 interface CategorizeRequest {
@@ -43,7 +42,7 @@ interface InsightsResponse {
 export const aiApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     categorizeExpense: builder.mutation<
-      ApiResponse<CategorizeResponse>,
+      CategorizeResponse,
       CategorizeRequest
     >({
       query: (body) => ({
@@ -54,7 +53,7 @@ export const aiApi = apiSlice.injectEndpoints({
     }),
 
     parseExpense: builder.mutation<
-      ApiResponse<ParseExpenseResponse>,
+      ParseExpenseResponse,
       ParseExpenseRequest
     >({
       query: (body) => ({
@@ -64,7 +63,7 @@ export const aiApi = apiSlice.injectEndpoints({
       }),
     }),
 
-    getInsights: builder.query<ApiResponse<InsightsResponse>, void>({
+    getInsights: builder.query<InsightsResponse, void>({
       query: () => '/api/ai/insights',
     }),
   }),

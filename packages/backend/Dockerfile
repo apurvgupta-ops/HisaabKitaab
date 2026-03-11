@@ -1,35 +1,45 @@
 FROM node:20-alpine AS base
 WORKDIR /app
 
+# --- Install all monorepo deps via npm workspaces ---
 FROM base AS deps
-COPY package.json ./packages/backend/package.json
+COPY package.json package-lock.json* ./
 COPY packages/shared/package.json ./packages/shared/package.json
 COPY packages/backend/package.json ./packages/backend/package.json
-RUN cd packages/backend && npm install --legacy-peer-deps
 
+# Stub the frontend package.json so npm workspaces doesn't fail
+RUN mkdir -p packages/frontend && echo '{"name":"@splitwise/frontend","version":"1.0.0","private":true}' > packages/frontend/package.json
+
+RUN npm install --legacy-peer-deps
+
+# --- Build the shared package first ---
 FROM base AS shared-build
-COPY packages/shared ./packages/shared
 COPY tsconfig.base.json ./
+COPY packages/shared ./packages/shared
 COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_modules
 RUN cd packages/shared && npx tsc
 
+# --- Build the backend (including prisma generate) ---
 FROM base AS build
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/packages/backend/node_modules ./packages/backend/node_modules
-COPY --from=shared-build /app/packages/shared ./packages/shared
-COPY packages/backend ./packages/backend
 COPY tsconfig.base.json ./
+COPY packages/backend ./packages/backend
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=shared-build /app/packages/shared ./packages/shared
 RUN cd packages/backend && npx prisma generate && npx tsc
 
+# --- Production runner ---
 FROM base AS runner
 ENV NODE_ENV=production
+
 COPY --from=build /app/packages/backend/dist ./dist
 COPY --from=build /app/packages/backend/prisma ./prisma
-COPY --from=build /app/packages/backend/node_modules ./node_modules
-COPY --from=build /app/packages/shared/dist ./node_modules/@splitwise/shared/dist
-COPY --from=build /app/packages/shared/package.json ./node_modules/@splitwise/shared/package.json
+
+# Copy node_modules from BUILD stage (has prisma generate output in .prisma/client)
+COPY --from=build /app/node_modules ./node_modules
+
+COPY --from=shared-build /app/packages/shared/dist ./node_modules/@splitwise/shared/dist
+COPY --from=shared-build /app/packages/shared/package.json ./node_modules/@splitwise/shared/package.json
 
 EXPOSE 4000
 
-CMD ["node", "dist/server.js"]
+CMD ["sh", "-c", "npx prisma migrate deploy --schema ./prisma/schema.prisma && node dist/server.js"]

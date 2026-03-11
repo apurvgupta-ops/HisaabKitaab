@@ -48,7 +48,7 @@ export function AddTransactionDialog({
   const [updateTransaction, { isLoading: isUpdating }] = useUpdateTransactionMutation();
   const { data: categoriesData } = useGetCategoriesQuery();
 
-  const categories = categoriesData?.data ?? [];
+  const categories = categoriesData ?? [];
   const isEditing = !!editingTransaction;
   const isLoading = isCreating || isUpdating;
 

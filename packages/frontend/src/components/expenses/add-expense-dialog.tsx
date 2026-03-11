@@ -86,7 +86,7 @@ export function AddExpenseDialog({
   const [updateExpense, { isLoading: isUpdating }] = useUpdateExpenseMutation();
   const { data: categoriesData } = useGetCategoriesQuery();
 
-  const categories = categoriesData?.data ?? [];
+  const categories = categoriesData ?? [];
   const isEditing = !!editingExpense;
   const isLoading = isCreating || isUpdating;
 

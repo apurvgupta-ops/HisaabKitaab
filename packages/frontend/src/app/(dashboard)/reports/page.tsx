@@ -225,7 +225,7 @@ export default function ReportsPage() {
     });
 
   const transactions = txData?.data ?? [];
-  const summary = summaryData?.data;
+  const summary = summaryData;
 
   const cashFlowData = useMemo(
     () => buildCashFlowData(transactions, period),

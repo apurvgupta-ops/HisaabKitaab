@@ -99,8 +99,8 @@ export default function BudgetsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState<BudgetWithProgress | null>(null);
 
-  const budgets = budgetsData?.data ?? [];
-  const alerts = alertsData?.data ?? [];
+  const budgets = budgetsData ?? [];
+  const alerts = alertsData ?? [];
 
   const handleDelete = async (id: string) => {
     try {

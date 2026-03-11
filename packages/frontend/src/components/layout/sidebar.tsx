@@ -29,11 +29,9 @@ import { useLogoutMutation } from "@/store/api/authApi";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
@@ -120,9 +118,10 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
   }, [logout, dispatch, router]);
 
   useEffect(() => {
-    onMobileClose();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+    if (window.innerWidth < 1024) {
+      onMobileClose();
+    }
+  }, [pathname, onMobileClose]);
 
   // Keyboard shortcut: [ toggles sidebar collapse
   useEffect(() => {
@@ -148,7 +147,7 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
         href={item.href}
         className={cn(
           "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium",
-          "transition-all duration-200 ease-in-out",
+          "transition-colors duration-150",
           active
             ? "bg-primary/10 text-primary"
             : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
@@ -156,11 +155,11 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
         )}
       >
         {active && (
-          <span className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-r-full bg-primary transition-all duration-200" />
+          <span className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-r-full bg-primary" />
         )}
         <Icon
           className={cn(
-            "h-5 w-5 shrink-0 transition-colors duration-200",
+            "h-5 w-5 shrink-0",
             active
               ? "text-primary"
               : "text-muted-foreground group-hover:text-accent-foreground"
@@ -168,7 +167,7 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
         />
         <span
           className={cn(
-            "truncate transition-all duration-200",
+            "truncate",
             collapsed ? "w-0 opacity-0 overflow-hidden" : "w-auto opacity-100"
           )}
         >
@@ -196,7 +195,7 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
       {/* Logo */}
       <div
         className={cn(
-          "flex h-16 shrink-0 items-center gap-3 border-b px-4 transition-all duration-300",
+          "flex h-16 shrink-0 items-center gap-3 border-b px-4",
           collapsed && "justify-center px-2"
         )}
       >
@@ -205,7 +204,7 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
         </div>
         <span
           className={cn(
-            "text-lg font-bold tracking-tight transition-all duration-300",
+            "text-lg font-bold tracking-tight",
             collapsed
               ? "w-0 opacity-0 overflow-hidden"
               : "w-auto opacity-100"
@@ -216,41 +215,35 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
       </div>
 
       {/* Navigation */}
-      <ScrollArea className="flex-1 px-3 py-4">
-        <TooltipProvider>
-          <nav className="flex flex-col gap-6">
-            {navSections.map((section) => (
-              <div key={section.title}>
-                <p
-                  className={cn(
-                    "mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70 transition-all duration-200",
-                    collapsed
-                      ? "h-0 opacity-0 overflow-hidden mb-0"
-                      : "h-auto opacity-100"
-                  )}
-                >
-                  {section.title}
-                </p>
-                {collapsed && (
-                  <Separator className="mb-2 opacity-50" />
+      <nav className="flex-1 overflow-y-auto px-3 py-4">
+        <div className="flex flex-col gap-6">
+          {navSections.map((section) => (
+            <div key={section.title}>
+              <p
+                className={cn(
+                  "mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70",
+                  collapsed && "h-0 opacity-0 overflow-hidden mb-0"
                 )}
-                <div className="flex flex-col gap-1">
-                  {section.items.map(renderNavItem)}
-                </div>
+              >
+                {section.title}
+              </p>
+              {collapsed && (
+                <Separator className="mb-2 opacity-50" />
+              )}
+              <div className="flex flex-col gap-1">
+                {section.items.map(renderNavItem)}
               </div>
-            ))}
-          </nav>
-        </TooltipProvider>
-      </ScrollArea>
+            </div>
+          ))}
+        </div>
+      </nav>
 
       {/* Bottom section */}
       <div className="mt-auto border-t">
         <div className="px-3 py-3">
-          <TooltipProvider>
-            <div className="flex flex-col gap-1">
-              {bottomNav.map(renderNavItem)}
-            </div>
-          </TooltipProvider>
+          <div className="flex flex-col gap-1">
+            {bottomNav.map(renderNavItem)}
+          </div>
         </div>
 
         <Separator />
@@ -262,11 +255,11 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
               <button
                 className={cn(
                   "flex w-full items-center gap-3 rounded-lg p-2 text-left",
-                  "transition-colors duration-200 hover:bg-accent",
+                  "hover:bg-accent",
                   collapsed && "justify-center"
                 )}
               >
-                <Avatar className="h-8 w-8 shrink-0 ring-2 ring-primary/10 transition-shadow hover:ring-primary/20">
+                <Avatar className="h-8 w-8 shrink-0 ring-2 ring-primary/10">
                   <AvatarImage
                     src={user?.avatar ?? undefined}
                     alt={user?.name}
@@ -277,7 +270,7 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
                 </Avatar>
                 <div
                   className={cn(
-                    "min-w-0 flex-1 transition-all duration-200",
+                    "min-w-0 flex-1",
                     collapsed
                       ? "w-0 opacity-0 overflow-hidden"
                       : "w-auto opacity-100"
@@ -332,36 +325,34 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
         {/* Collapse toggle (desktop only) */}
         <div className="hidden border-t px-3 py-2 lg:block">
           <Tooltip delayDuration={0}>
-            <TooltipProvider>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => dispatch(toggleSidebar())}
-                  className={cn(
-                    "w-full text-muted-foreground transition-all duration-200 hover:text-foreground",
-                    collapsed ? "justify-center" : "justify-start"
-                  )}
-                >
-                  {collapsed ? (
-                    <ChevronsRight className="h-4 w-4" />
-                  ) : (
-                    <>
-                      <ChevronsLeft className="h-4 w-4 mr-2" />
-                      <span className="text-xs">Collapse</span>
-                    </>
-                  )}
-                </Button>
-              </TooltipTrigger>
-              {collapsed && (
-                <TooltipContent side="right" className="font-medium">
-                  Expand sidebar
-                  <span className="ml-2 text-xs text-muted-foreground">
-                    Ctrl+[
-                  </span>
-                </TooltipContent>
-              )}
-            </TooltipProvider>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => dispatch(toggleSidebar())}
+                className={cn(
+                  "w-full text-muted-foreground hover:text-foreground",
+                  collapsed ? "justify-center" : "justify-start"
+                )}
+              >
+                {collapsed ? (
+                  <ChevronsRight className="h-4 w-4" />
+                ) : (
+                  <>
+                    <ChevronsLeft className="h-4 w-4 mr-2" />
+                    <span className="text-xs">Collapse</span>
+                  </>
+                )}
+              </Button>
+            </TooltipTrigger>
+            {collapsed && (
+              <TooltipContent side="right" className="font-medium">
+                Expand sidebar
+                <span className="ml-2 text-xs text-muted-foreground">
+                  Ctrl+[
+                </span>
+              </TooltipContent>
+            )}
           </Tooltip>
         </div>
       </div>
@@ -398,7 +389,7 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
       <aside
         className={cn(
           "hidden h-screen shrink-0 border-r bg-sidebar-background text-sidebar-foreground lg:block",
-          "transition-all duration-300 ease-in-out",
+          "transition-[width] duration-200 ease-in-out",
           collapsed ? "w-[68px]" : "w-64"
         )}
       >

@@ -94,8 +94,6 @@ export default function RegisterPage() {
           refreshToken: response.tokens.refreshToken,
         }),
       );
-      localStorage.setItem("accessToken", response.tokens.accessToken);
-      localStorage.setItem("refreshToken", response.tokens.refreshToken);
       router.push("/dashboard");
     } catch (err: unknown) {
       const error = err as { data?: { message?: string }; status?: number };

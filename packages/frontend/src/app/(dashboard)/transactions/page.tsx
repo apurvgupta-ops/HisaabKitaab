@@ -124,8 +124,8 @@ export default function TransactionsPage() {
 
   const transactions = txData?.data ?? [];
   const pagination = txData?.pagination;
-  const summary = summaryData?.data;
-  const categories = categoriesData?.data ?? [];
+  const summary = summaryData;
+  const categories = categoriesData ?? [];
 
   const categoryMap = useMemo(() => {
     const map = new Map<string, Category>();

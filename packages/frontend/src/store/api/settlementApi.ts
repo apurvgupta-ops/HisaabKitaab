@@ -1,5 +1,4 @@
 import type {
-  ApiResponse,
   SettlementWithUsers,
   DebtEdge,
   SettlementStatus,
@@ -24,29 +23,23 @@ interface UpdateSettlementStatusRequest {
 
 export const settlementApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getGroupSettlements: builder.query<
-      ApiResponse<SettlementWithUsers[]>,
-      string
-    >({
+    getGroupSettlements: builder.query<SettlementWithUsers[], string>({
       query: (groupId) => `/api/settlements/group/${groupId}`,
       providesTags: ['Settlement'],
     }),
 
-    getSimplifiedDebts: builder.query<ApiResponse<DebtEdge[]>, string>({
+    getSimplifiedDebts: builder.query<DebtEdge[], string>({
       query: (groupId) => `/api/settlements/group/${groupId}/simplified`,
       providesTags: ['Settlement'],
     }),
 
-    getUserSettlements: builder.query<
-      ApiResponse<SettlementWithUsers[]>,
-      void
-    >({
+    getUserSettlements: builder.query<SettlementWithUsers[], void>({
       query: () => '/api/settlements/me',
       providesTags: ['Settlement'],
     }),
 
     createSettlement: builder.mutation<
-      ApiResponse<SettlementWithUsers>,
+      SettlementWithUsers,
       CreateSettlementRequest
     >({
       query: (body) => ({
@@ -58,7 +51,7 @@ export const settlementApi = apiSlice.injectEndpoints({
     }),
 
     updateSettlementStatus: builder.mutation<
-      ApiResponse<SettlementWithUsers>,
+      SettlementWithUsers,
       UpdateSettlementStatusRequest
     >({
       query: ({ id, ...body }) => ({

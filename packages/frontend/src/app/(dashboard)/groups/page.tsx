@@ -97,7 +97,7 @@ export default function GroupsPage() {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [createOpen, setCreateOpen] = useState(false);
 
-  const groups = data?.data ?? [];
+  const groups = (Array.isArray(data) ? data : []) as Group[];
 
   const filteredGroups = groups.filter((group: Group) => {
     const matchesSearch = group.name
@@ -175,7 +175,7 @@ export default function GroupsPage() {
 
             return (
               <Link key={group.id} href={`/groups/${group.id}`}>
-                <Card className="group cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+                <Card className="group cursor-pointer hover:shadow-md">
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                       <div className="min-w-0 flex-1">

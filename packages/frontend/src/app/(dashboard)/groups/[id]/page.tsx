@@ -137,7 +137,7 @@ function MembersTab({
 
   const onAddMember = async (values: AddMemberInput) => {
     try {
-      await addMember({ groupId, userId: values.email, role: values.role }).unwrap();
+      await addMember({ groupId, email: values.email, role: values.role }).unwrap();
       toast({ title: "Member added", description: "New member has been invited." });
       memberForm.reset();
     } catch {
@@ -420,11 +420,12 @@ export default function GroupDetailPage() {
   const { data: balancesData } = useGetGroupBalancesQuery(groupId);
   const { data: debtsData } = useGetSimplifiedDebtsQuery(groupId);
 
-  const group = groupData?.data;
-  const expenses = expensesData?.data ?? [];
-  const pagination = expensesData?.pagination;
-  const balanceSummary = balancesData?.data;
-  const simplifiedDebts = debtsData?.data ?? [];
+  const group = groupData;
+  const expensesResult = expensesData as { data?: ExpenseWithDetails[]; pagination?: { page: number; totalPages: number; hasNext: boolean; hasPrev: boolean } } | ExpenseWithDetails[] | undefined;
+  const expenses = Array.isArray(expensesResult) ? expensesResult : (expensesResult?.data ?? []);
+  const pagination = Array.isArray(expensesResult) ? undefined : expensesResult?.pagination;
+  const balances = Array.isArray(balancesData) ? balancesData : [];
+  const simplifiedDebts = Array.isArray(debtsData) ? debtsData : [];
 
   const isAdmin = group?.members.some(
     (m) => m.userId === currentUser?.id && m.role === "admin"
@@ -533,19 +534,12 @@ export default function GroupDetailPage() {
         </TabsContent>
 
         <TabsContent value="balances">
-          {balanceSummary ? (
-            <BalanceCards
-              balanceSummary={balanceSummary}
-              currency={group.currency}
-              onSettleUp={handleSettleUp}
-            />
-          ) : (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <p className="text-sm text-muted-foreground">
-                No balance data available yet.
-              </p>
-            </div>
-          )}
+          <BalanceCards
+            balances={balances}
+            simplifiedDebts={simplifiedDebts}
+            currency={group.currency}
+            onSettleUp={handleSettleUp}
+          />
         </TabsContent>
 
         <TabsContent value="settle" className="space-y-4">
