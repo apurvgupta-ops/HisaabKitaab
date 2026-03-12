@@ -70,7 +70,7 @@ export const expenseApi = apiSlice.injectEndpoints({
     >({
       query: ({ id, ...body }) => ({
         url: `/api/expenses/${id}`,
-        method: 'PATCH',
+        method: 'PUT',
         body,
       }),
       invalidatesTags: ['Expense', 'Settlement'],
