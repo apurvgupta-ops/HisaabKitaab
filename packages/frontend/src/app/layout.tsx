@@ -12,13 +12,26 @@ export const metadata: Metadata = {
   description: 'Split expenses with friends, track personal finances, and manage budgets.',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+/**
+ * Inline script that runs before React hydration to apply the
+ * persisted theme class, preventing a flash of the wrong theme.
+ */
+const themeScript = `
+(function(){
+  try {
+    var t = localStorage.getItem('theme') || 'system';
+    var dark = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    if (dark) document.documentElement.classList.add('dark');
+  } catch(e) {}
+})();
+`;
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className={inter.className}>
         <StoreProvider>
           <TooltipProvider delayDuration={0}>

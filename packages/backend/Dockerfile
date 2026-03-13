@@ -31,14 +31,17 @@ RUN cd packages/backend && npx prisma generate && npx tsc
 FROM base AS runner
 ENV NODE_ENV=production
 
-COPY --from=build /app/packages/backend/dist ./dist
-COPY --from=build /app/packages/backend/prisma ./prisma
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 backend
 
-# Copy node_modules from BUILD stage (has prisma generate output in .prisma/client)
-COPY --from=build /app/node_modules ./node_modules
+COPY --from=build --chown=backend:nodejs /app/packages/backend/dist ./dist
+COPY --from=build --chown=backend:nodejs /app/packages/backend/prisma ./prisma
+COPY --from=build --chown=backend:nodejs /app/node_modules ./node_modules
 
-COPY --from=shared-build /app/packages/shared/dist ./node_modules/@splitwise/shared/dist
-COPY --from=shared-build /app/packages/shared/package.json ./node_modules/@splitwise/shared/package.json
+COPY --from=shared-build --chown=backend:nodejs /app/packages/shared/dist ./node_modules/@splitwise/shared/dist
+COPY --from=shared-build --chown=backend:nodejs /app/packages/shared/package.json ./node_modules/@splitwise/shared/package.json
+
+USER backend
 
 EXPOSE 4000
 

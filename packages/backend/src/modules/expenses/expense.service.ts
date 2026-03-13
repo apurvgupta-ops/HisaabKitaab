@@ -45,7 +45,7 @@ const serialiseExpense = (expense: Record<string, unknown>) => ({
   splits: (expense.splits as Record<string, unknown>[])?.map((s) => ({
     ...s,
     amount: Number(s.amount),
-    percentage: s.percentage != null ? Number(s.percentage) : null,
+    percentage: s.percentage !== undefined && s.percentage !== null ? Number(s.percentage) : null,
   })),
 });
 
@@ -88,6 +88,33 @@ async function invalidateBalanceCache(groupId: string) {
   await cacheDeletePattern(`group:${groupId}:balances*`);
 }
 
+/**
+ * Validates that every userId in payers and splits belongs to the group.
+ * Throws a 400 error listing the invalid user IDs if any are found.
+ */
+async function validateParticipantsAreMember(
+  groupId: string,
+  payerUserIds: string[],
+  splitUserIds: string[],
+) {
+  const allUserIds = [...new Set([...payerUserIds, ...splitUserIds])];
+  if (allUserIds.length === 0) return;
+
+  const members = await prisma.groupMember.findMany({
+    where: { groupId, userId: { in: allUserIds } },
+    select: { userId: true },
+  });
+
+  const memberSet = new Set(members.map((m) => m.userId));
+  const invalid = allUserIds.filter((id) => !memberSet.has(id));
+
+  if (invalid.length > 0) {
+    throw AppError.badRequest(
+      `The following users are not members of this group: ${invalid.join(', ')}`,
+    );
+  }
+}
+
 export const expenseService = {
   /**
    * Creates an expense with payers and splits inside a transaction.
@@ -95,6 +122,12 @@ export const expenseService = {
    */
   async createExpense(userId: string, data: CreateExpenseInput) {
     await checkMembership(data.groupId, userId);
+
+    await validateParticipantsAreMember(
+      data.groupId,
+      data.payers.map((p) => p.userId),
+      data.splits.map((s) => s.userId),
+    );
 
     let splitData = data.splits.map((s) => ({
       userId: s.userId,
@@ -216,9 +249,7 @@ export const expenseService = {
     ]);
 
     return {
-      data: expenses.map((e) =>
-        serialiseExpense(e as unknown as Record<string, unknown>),
-      ),
+      data: expenses.map((e) => serialiseExpense(e as unknown as Record<string, unknown>)),
       pagination: buildPaginationMeta(page, limit, total),
     };
   },
@@ -230,7 +261,17 @@ export const expenseService = {
   async updateExpense(expenseId: string, userId: string, data: UpdateExpenseInput) {
     const existing = await checkCreatorOrAdmin(expenseId, userId);
 
-    let splitData: { userId: string; amount: number; percentage: number | null; shares: number | null }[] | undefined;
+    if (data.payers || data.splits) {
+      await validateParticipantsAreMember(
+        existing.groupId,
+        data.payers?.map((p) => p.userId) ?? [],
+        data.splits?.map((s) => s.userId) ?? [],
+      );
+    }
+
+    let splitData:
+      | { userId: string; amount: number; percentage: number | null; shares: number | null }[]
+      | undefined;
 
     if (data.splits) {
       splitData = data.splits.map((s) => ({

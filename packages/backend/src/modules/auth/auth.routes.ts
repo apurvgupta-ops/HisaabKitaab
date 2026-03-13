@@ -20,7 +20,7 @@ import {
 
 const router = Router();
 
-router.post('/register', validate(registerSchema), register);
+router.post('/register', authLimiter, validate(registerSchema), register);
 router.post('/login', authLimiter, validate(loginSchema), login);
 router.post('/refresh', validate(refreshTokenSchema), refresh);
 router.post('/logout', authenticate, logout);

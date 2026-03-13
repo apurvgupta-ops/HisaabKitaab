@@ -33,9 +33,17 @@ export const cacheDelete = async (key: string): Promise<void> => {
   await redis.del(key);
 };
 
+/**
+ * Deletes all keys matching a glob pattern using SCAN (non-blocking).
+ * Unlike KEYS, SCAN iterates incrementally and won't block Redis.
+ */
 export const cacheDeletePattern = async (pattern: string): Promise<void> => {
-  const keys = await redis.keys(pattern);
-  if (keys.length > 0) {
-    await redis.del(...keys);
-  }
+  let cursor = '0';
+  do {
+    const [nextCursor, keys] = await redis.scan(cursor, 'MATCH', pattern, 'COUNT', 100);
+    cursor = nextCursor;
+    if (keys.length > 0) {
+      await redis.del(...keys);
+    }
+  } while (cursor !== '0');
 };

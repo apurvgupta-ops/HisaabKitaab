@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
 import { store } from './store';
 import { hydrateAuth } from './slices/authSlice';
+import { ThemeProvider } from '@/components/theme-provider';
 
 interface StoreProviderProps {
   children: React.ReactNode;
@@ -25,7 +26,9 @@ const AuthHydrator = ({ children }: { children: React.ReactNode }) => {
 export const StoreProvider = ({ children }: StoreProviderProps) => {
   return (
     <Provider store={store}>
-      <AuthHydrator>{children}</AuthHydrator>
+      <AuthHydrator>
+        <ThemeProvider>{children}</ThemeProvider>
+      </AuthHydrator>
     </Provider>
   );
 };

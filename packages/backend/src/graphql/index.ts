@@ -9,6 +9,7 @@ import { resolvers } from './resolvers';
 import { env } from '../config';
 import { prisma } from '../shared/database/prisma';
 import { logger } from '../shared/logger';
+import { graphqlLimiter } from '../middleware';
 
 interface GqlContext {
   user: { id: string; email: string } | null;
@@ -41,6 +42,7 @@ export const setupGraphQL = async (app: Express): Promise<void> => {
     '/graphql',
     cors<cors.CorsRequest>() as any,
     express.json() as any,
+    graphqlLimiter as any,
     expressMiddleware(server, {
       context: async ({ req }): Promise<GqlContext> => {
         const authHeader = req.headers.authorization;

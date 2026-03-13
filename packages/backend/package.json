@@ -6,7 +6,9 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "lint": "eslint src/ --ext .ts",
+    "lint": "eslint --config eslint.config.mjs src/",
+    "lint:fix": "eslint --config eslint.config.mjs src/ --fix",
+    "typecheck": "tsc --noEmit",
     "test": "jest --passWithNoTests",
     "clean": "rimraf dist",
     "db:migrate": "prisma migrate dev",
@@ -42,6 +44,7 @@
     "pino": "^9.5.0",
     "pino-pretty": "^13.0.0",
     "rate-limit-redis": "^4.2.0",
+    "@sentry/node": "^8.0.0",
     "socket.io": "^4.8.0",
     "uuid": "^11.0.0",
     "zod": "^3.24.0"
@@ -58,11 +61,10 @@
     "@types/passport-google-oauth20": "^2.0.16",
     "@types/passport-jwt": "^4.0.1",
     "@types/uuid": "^10.0.0",
-    "eslint": "^9.17.0",
+    "@types/jest": "^29.5.0",
     "jest": "^29.7.0",
+    "ts-jest": "^29.2.0",
     "prisma": "^6.4.0",
-    "rimraf": "^6.0.0",
-    "tsx": "^4.19.0",
-    "typescript": "^5.7.0"
+    "tsx": "^4.19.0"
   }
 }
