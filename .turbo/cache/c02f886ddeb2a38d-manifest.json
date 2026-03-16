@@ -1,0 +1,1378 @@
+{
+  "files": {
+    "packages/backend/dist/shared/queue": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/backend/dist/shared/services/ocr.d.ts": {
+      "size": 1038,
+      "mtime_nanos": 1773052098955812900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/expenses/expense.controller.js.map": {
+      "size": 2960,
+      "mtime_nanos": 1773295670117659400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/middleware/validate.d.ts.map": {
+      "size": 414,
+      "mtime_nanos": 1773052098781018100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/groups/group.routes.js": {
+      "size": 1338,
+      "mtime_nanos": 1773295670092152000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/groups/group.service.d.ts": {
+      "size": 2613,
+      "mtime_nanos": 1773052098847929400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/auth/auth.controller.js.map": {
+      "size": 3443,
+      "mtime_nanos": 1773295670030777100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/config/index.js": {
+      "size": 263,
+      "mtime_nanos": 1773295669934182000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/server.d.ts.map": {
+      "size": 106,
+      "mtime_nanos": 1773052098973350400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/server.js.map": {
+      "size": 1375,
+      "mtime_nanos": 1773295670561635800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/middleware/errorHandler.js": {
+      "size": 3643,
+      "mtime_nanos": 1773295669959922900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/ai/ai.controller.d.ts": {
+      "size": 444,
+      "mtime_nanos": 1773052098934531600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/auth/auth.service.d.ts.map": {
+      "size": 927,
+      "mtime_nanos": 1773052098808049400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/ai/ai.service.d.ts.map": {
+      "size": 357,
+      "mtime_nanos": 1773052098931023600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/auth/auth.service.js": {
+      "size": 8420,
+      "mtime_nanos": 1773295670022773900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/reports/report.service.js.map": {
+      "size": 12516,
+      "mtime_nanos": 1773295670478707600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/uploads/upload.controller.d.ts": {
+      "size": 708,
+      "mtime_nanos": 1773052098961319600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/middleware/rateLimiter.d.ts.map": {
+      "size": 193,
+      "mtime_nanos": 1773052098792036300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/queue/bullQueue.js.map": {
+      "size": 1155,
+      "mtime_nanos": 1773295670568636000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/services/ocr.d.ts.map": {
+      "size": 549,
+      "mtime_nanos": 1773052098954816300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/database": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/backend/dist/shared/database/prisma.d.ts": {
+      "size": 70,
+      "mtime_nanos": 1773052098774513100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/categories/category.routes.js": {
+      "size": 840,
+      "mtime_nanos": 1773295670352528800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/uploads/upload.controller.js.map": {
+      "size": 2648,
+      "mtime_nanos": 1773295670453815200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/socket/socketServer.js.map": {
+      "size": 2419,
+      "mtime_nanos": 1773295670096656300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/config/env.d.ts": {
+      "size": 1357,
+      "mtime_nanos": 1773052098752324800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/cache/redis.js": {
+      "size": 1591,
+      "mtime_nanos": 1773295669988773700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/config/env.js": {
+      "size": 5094,
+      "mtime_nanos": 1773295669926182800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/budgets/budget.service.js.map": {
+      "size": 5452,
+      "mtime_nanos": 1773295670189174500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/auth/auth.controller.d.ts.map": {
+      "size": 1072,
+      "mtime_nanos": 1773052098814565400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/services/ocr.js.map": {
+      "size": 3459,
+      "mtime_nanos": 1773295670441309600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/uploads/upload.routes.js.map": {
+      "size": 480,
+      "mtime_nanos": 1773295670465706500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/groups/group.controller.d.ts": {
+      "size": 1536,
+      "mtime_nanos": 1773052098853433000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/reports/report.routes.js": {
+      "size": 732,
+      "mtime_nanos": 1773295670503707300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/middleware/errorHandler.js.map": {
+      "size": 3373,
+      "mtime_nanos": 1773295669955924100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/graphql": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/backend/dist/modules/auth": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/backend/dist/modules/auth/auth.service.d.ts": {
+      "size": 1975,
+      "mtime_nanos": 1773052098809049400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/graphql/resolvers.js": {
+      "size": 7728,
+      "mtime_nanos": 1773295670548125600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/settlements/settlement.service.d.ts": {
+      "size": 1503,
+      "mtime_nanos": 1773052098882237900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/services/email.js": {
+      "size": 2668,
+      "mtime_nanos": 1773295670588631900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/users/user.service.js": {
+      "size": 4824,
+      "mtime_nanos": 1773295670050013100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/cache/redis.d.ts.map": {
+      "size": 497,
+      "mtime_nanos": 1773052098798541100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/ai/ai.controller.js.map": {
+      "size": 1465,
+      "mtime_nanos": 1773295670389725600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/services/s3.js.map": {
+      "size": 1479,
+      "mtime_nanos": 1773295670422306800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/middleware/validate.d.ts": {
+      "size": 510,
+      "mtime_nanos": 1773052098781018100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/ai/ai.routes.js": {
+      "size": 595,
+      "mtime_nanos": 1773295670400725100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/expenses/expense.routes.js": {
+      "size": 1099,
+      "mtime_nanos": 1773295670127659700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/middleware/rateLimiter.d.ts": {
+      "size": 216,
+      "mtime_nanos": 1773052098792036300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/auth/auth.routes.js": {
+      "size": 1289,
+      "mtime_nanos": 1773295670041510400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/auth/auth.controller.js": {
+      "size": 3506,
+      "mtime_nanos": 1773295670033773300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/backend/dist/modules/budgets/budget.controller.js": {
+      "size": 2431,
+      "mtime_nanos": 1773295670234169000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/budgets/budget.service.d.ts.map": {
+      "size": 811,
+      "mtime_nanos": 1773052098905776800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/expenses/expense.service.js": {
+      "size": 12998,
+      "mtime_nanos": 1773295670111659500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/middleware/errorHandler.d.ts": {
+      "size": 819,
+      "mtime_nanos": 1773052098772007300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/settlements": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/backend/dist/modules/settlements/settlement.controller.d.ts.map": {
+      "size": 722,
+      "mtime_nanos": 1773052098886252900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/transactions": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/backend/dist/modules/reports/report.controller.js.map": {
+      "size": 2820,
+      "mtime_nanos": 1773295670491706500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/transactions/transaction.service.d.ts": {
+      "size": 1521,
+      "mtime_nanos": 1773052098895766500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/graphql/typeDefs.js.map": {
+      "size": 351,
+      "mtime_nanos": 1773295670517613200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/app.js.map": {
+      "size": 1986,
+      "mtime_nanos": 1773295670509708000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/categories": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/backend/dist/modules/settlements/settlement.routes.js.map": {
+      "size": 658,
+      "mtime_nanos": 1773295670152173100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/transactions/transaction.service.js": {
+      "size": 8071,
+      "mtime_nanos": 1773295670168171400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/users": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/backend/dist/graphql/resolvers.js.map": {
+      "size": 6935,
+      "mtime_nanos": 1773295670536622300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/graphql/typeDefs.js": {
+      "size": 3741,
+      "mtime_nanos": 1773295670525620800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/categories/category.routes.js.map": {
+      "size": 581,
+      "mtime_nanos": 1773295670345022500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/settlements/settlement.controller.js": {
+      "size": 2269,
+      "mtime_nanos": 1773295670146662400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/settlements/settlement.routes.js": {
+      "size": 1016,
+      "mtime_nanos": 1773295670156170500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/middleware/validate.js.map": {
+      "size": 541,
+      "mtime_nanos": 1773295669978770000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/users/user.service.js.map": {
+      "size": 3670,
+      "mtime_nanos": 1773295670047513300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/database/prisma.js.map": {
+      "size": 462,
+      "mtime_nanos": 1773295669963922200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/services/currency.js.map": {
+      "size": 5356,
+      "mtime_nanos": 1773295670577632100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/middleware/index.js": {
+      "size": 1299,
+      "mtime_nanos": 1773295670008774400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/services/email.d.ts": {
+      "size": 489,
+      "mtime_nanos": 1773052098983589500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/services/email.d.ts.map": {
+      "size": 549,
+      "mtime_nanos": 1773052098983589500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/services/s3.js": {
+      "size": 1742,
+      "mtime_nanos": 1773295670430305600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/reports/report.controller.js": {
+      "size": 2815,
+      "mtime_nanos": 1773295670495706100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/services/upload.js.map": {
+      "size": 805,
+      "mtime_nanos": 1773295670404732900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/middleware/auth.d.ts": {
+      "size": 451,
+      "mtime_nanos": 1773052098779018000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/ai/ai.controller.d.ts.map": {
+      "size": 500,
+      "mtime_nanos": 1773052098933526700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/budgets/budget.controller.d.ts.map": {
+      "size": 799,
+      "mtime_nanos": 1773052098910283600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/uploads/upload.routes.js": {
+      "size": 728,
+      "mtime_nanos": 1773295670468707100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/users/user.service.d.ts": {
+      "size": 1600,
+      "mtime_nanos": 1773052098835710200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/ai/ai.routes.js.map": {
+      "size": 422,
+      "mtime_nanos": 1773295670396725400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/socket/socketServer.js": {
+      "size": 2497,
+      "mtime_nanos": 1773295670099659500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/reports/report.routes.js.map": {
+      "size": 504,
+      "mtime_nanos": 1773295670500706400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/expenses/expense.controller.d.ts": {
+      "size": 739,
+      "mtime_nanos": 1773052098875730300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/config/index.d.ts": {
+      "size": 64,
+      "mtime_nanos": 1773052098755993900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/ai/ai.service.js.map": {
+      "size": 8444,
+      "mtime_nanos": 1773295670376726200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/budgets/budget.controller.js.map": {
+      "size": 2841,
+      "mtime_nanos": 1773295670219170000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/settlements/settlement.service.js.map": {
+      "size": 7610,
+      "mtime_nanos": 1773295670133660300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/settlements/settlement.controller.js.map": {
+      "size": 2465,
+      "mtime_nanos": 1773295670143662400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/transactions/transaction.controller.d.ts": {
+      "size": 756,
+      "mtime_nanos": 1773052098899273600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/transactions/transaction.service.js.map": {
+      "size": 7644,
+      "mtime_nanos": 1773295670164170500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/users/user.controller.d.ts": {
+      "size": 815,
+      "mtime_nanos": 1773052098839652200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/users/user.routes.js.map": {
+      "size": 586,
+      "mtime_nanos": 1773295670063016100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/categories/category.controller.d.ts.map": {
+      "size": 610,
+      "mtime_nanos": 1773052098918901500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/server.d.ts": {
+      "size": 47,
+      "mtime_nanos": 1773052098973350400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/database/prisma.d.ts.map": {
+      "size": 157,
+      "mtime_nanos": 1773052098774513100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/settlements/settlement.service.js": {
+      "size": 8506,
+      "mtime_nanos": 1773295670137662800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/middleware/auth.js.map": {
+      "size": 1418,
+      "mtime_nanos": 1773295669969922400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/logger.d.ts.map": {
+      "size": 178,
+      "mtime_nanos": 1773052098758996800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/categories/category.service.js": {
+      "size": 4589,
+      "mtime_nanos": 1773295670295060300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/queue/bullQueue.js": {
+      "size": 1193,
+      "mtime_nanos": 1773295670571632000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/ai": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/backend/dist/modules/ai/ai.service.js": {
+      "size": 10861,
+      "mtime_nanos": 1773295670381725600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/services/s3.d.ts.map": {
+      "size": 435,
+      "mtime_nanos": 1773052098947819600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/logger.js.map": {
+      "size": 454,
+      "mtime_nanos": 1773295669938189300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/budgets/budget.routes.js.map": {
+      "size": 701,
+      "mtime_nanos": 1773295670246428900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/middleware/rateLimiter.js": {
+      "size": 2210,
+      "mtime_nanos": 1773295669998773500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/cache": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/backend/dist/shared/services/currency.js": {
+      "size": 6540,
+      "mtime_nanos": 1773295670580632000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/middleware/errorHandler.d.ts.map": {
+      "size": 856,
+      "mtime_nanos": 1773052098771008300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/config/index.js.map": {
+      "size": 148,
+      "mtime_nanos": 1773295669931181600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/cache/redis.d.ts": {
+      "size": 412,
+      "mtime_nanos": 1773052098798541100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/categories/category.service.d.ts.map": {
+      "size": 387,
+      "mtime_nanos": 1773052098915898600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/users/user.controller.d.ts.map": {
+      "size": 643,
+      "mtime_nanos": 1773052098839014900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/auth/auth.routes.js.map": {
+      "size": 882,
+      "mtime_nanos": 1773295670038506400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/middleware/auth.d.ts.map": {
+      "size": 404,
+      "mtime_nanos": 1773052098778018100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/logger.js": {
+      "size": 729,
+      "mtime_nanos": 1773295669944185000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/budgets/budget.service.d.ts": {
+      "size": 2582,
+      "mtime_nanos": 1773052098906278800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/transactions/transaction.controller.d.ts.map": {
+      "size": 820,
+      "mtime_nanos": 1773052098898270900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/expenses/expense.routes.js.map": {
+      "size": 752,
+      "mtime_nanos": 1773295670125659700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/socket/socketServer.d.ts": {
+      "size": 425,
+      "mtime_nanos": 1773052098858949100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/socket": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/backend/dist/modules/groups/group.controller.d.ts.map": {
+      "size": 1078,
+      "mtime_nanos": 1773052098853433000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/budgets": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/backend/dist/modules/categories/category.controller.d.ts": {
+      "size": 532,
+      "mtime_nanos": 1773052098918901500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/queue/bullQueue.d.ts.map": {
+      "size": 447,
+      "mtime_nanos": 1773052098980589000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/services/ocr.js": {
+      "size": 4928,
+      "mtime_nanos": 1773295670445306200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/categories/category.controller.js.map": {
+      "size": 1968,
+      "mtime_nanos": 1773295670314018900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/graphql/index.js": {
+      "size": 2523,
+      "mtime_nanos": 1773295670556632900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/expenses/expense.service.js.map": {
+      "size": 11770,
+      "mtime_nanos": 1773295670109659600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/groups/group.routes.js.map": {
+      "size": 908,
+      "mtime_nanos": 1773295670090153600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/database/prisma.js": {
+      "size": 492,
+      "mtime_nanos": 1773295669965922600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/config/env.d.ts.map": {
+      "size": 185,
+      "mtime_nanos": 1773052098752324800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/backend/dist/config/env.js.map": {
+      "size": 4705,
+      "mtime_nanos": 1773295669922181700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/uploads/upload.controller.d.ts.map": {
+      "size": 546,
+      "mtime_nanos": 1773052098960319800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/queue/bullQueue.d.ts": {
+      "size": 450,
+      "mtime_nanos": 1773052098980589000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/reports": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/backend/dist/modules/groups": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/backend/dist/config": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/backend/dist/middleware/index.js.map": {
+      "size": 320,
+      "mtime_nanos": 1773295670004775900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/expenses": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/backend/dist/modules/groups/group.service.js": {
+      "size": 6795,
+      "mtime_nanos": 1773295670075017100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/middleware/index.d.ts.map": {
+      "size": 319,
+      "mtime_nanos": 1773052098794038900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/groups/group.service.d.ts.map": {
+      "size": 1756,
+      "mtime_nanos": 1773052098847929400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/settlements/settlement.service.d.ts.map": {
+      "size": 437,
+      "mtime_nanos": 1773052098882237900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/budgets/budget.controller.d.ts": {
+      "size": 733,
+      "mtime_nanos": 1773052098910283600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/expenses/expense.controller.d.ts.map": {
+      "size": 804,
+      "mtime_nanos": 1773052098874729200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/transactions/transaction.controller.js": {
+      "size": 2661,
+      "mtime_nanos": 1773295670177170300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/transactions/transaction.controller.js.map": {
+      "size": 2977,
+      "mtime_nanos": 1773295670174171900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/expenses/expense.controller.js": {
+      "size": 2548,
+      "mtime_nanos": 1773295670120659600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/middleware/validate.js": {
+      "size": 624,
+      "mtime_nanos": 1773295669981773200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/transactions/transaction.service.d.ts.map": {
+      "size": 519,
+      "mtime_nanos": 1773052098895766500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/graphql/index.js.map": {
+      "size": 1619,
+      "mtime_nanos": 1773295670553633600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/uploads/upload.controller.js": {
+      "size": 3080,
+      "mtime_nanos": 1773295670459746300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/users/user.routes.js": {
+      "size": 873,
+      "mtime_nanos": 1773295670065016600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/budgets/budget.routes.js": {
+      "size": 984,
+      "mtime_nanos": 1773295670253447000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/groups/group.controller.js.map": {
+      "size": 4272,
+      "mtime_nanos": 1773295670080017800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/server.js": {
+      "size": 1694,
+      "mtime_nanos": 1773295670564632000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/.turbo/turbo-build.log": {
+      "size": 41,
+      "mtime_nanos": 1773295670955414800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/backend/dist/middleware/auth.js": {
+      "size": 1900,
+      "mtime_nanos": 1773295669973922000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/transactions/transaction.routes.js.map": {
+      "size": 762,
+      "mtime_nanos": 1773295670181172000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/services/s3.d.ts": {
+      "size": 416,
+      "mtime_nanos": 1773052098947819600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/uploads": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/backend/dist/modules/auth/auth.service.js.map": {
+      "size": 6539,
+      "mtime_nanos": 1773295670018776500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/ai/ai.service.d.ts": {
+      "size": 1285,
+      "mtime_nanos": 1773052098931023600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/config/index.d.ts.map": {
+      "size": 153,
+      "mtime_nanos": 1773052098754487600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/auth/auth.controller.d.ts": {
+      "size": 1324,
+      "mtime_nanos": 1773052098814565400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/logger.d.ts": {
+      "size": 119,
+      "mtime_nanos": 1773052098758996800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/middleware/index.d.ts": {
+      "size": 254,
+      "mtime_nanos": 1773052098795036300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/expenses/expense.service.d.ts.map": {
+      "size": 527,
+      "mtime_nanos": 1773052098871220200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/services": {
+      "size": 0,
+      "mtime_nanos": 0,
+      "mode": 0,
+      "is_dir": true
+    },
+    "packages/backend/dist/shared/services/email.js.map": {
+      "size": 1806,
+      "mtime_nanos": 1773295670586631800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/services/upload.js": {
+      "size": 954,
+      "mtime_nanos": 1773295670407727500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/reports/report.service.js": {
+      "size": 12542,
+      "mtime_nanos": 1773295670483706700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/socket/socketServer.d.ts.map": {
+      "size": 486,
+      "mtime_nanos": 1773052098857994200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/middleware/rateLimiter.js.map": {
+      "size": 1508,
+      "mtime_nanos": 1773295669996775100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/ai/ai.controller.js": {
+      "size": 1401,
+      "mtime_nanos": 1773295670392724800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/groups/group.controller.js": {
+      "size": 4092,
+      "mtime_nanos": 1773295670083023200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/groups/group.service.js.map": {
+      "size": 5523,
+      "mtime_nanos": 1773295670071017600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/expenses/expense.service.d.ts": {
+      "size": 2215,
+      "mtime_nanos": 1773052098871220200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/settlements/settlement.controller.d.ts": {
+      "size": 663,
+      "mtime_nanos": 1773052098886252900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/middleware": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/backend/dist/app.js": {
+      "size": 2864,
+      "mtime_nanos": 1773295670512706300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/users/user.controller.js": {
+      "size": 2121,
+      "mtime_nanos": 1773295670059016400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/transactions/transaction.routes.js": {
+      "size": 1130,
+      "mtime_nanos": 1773295670183170400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/budgets/budget.service.js": {
+      "size": 6104,
+      "mtime_nanos": 1773295670207095000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/categories/category.service.d.ts": {
+      "size": 797,
+      "mtime_nanos": 1773052098916903000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/categories/category.service.js.map": {
+      "size": 3894,
+      "mtime_nanos": 1773295670273057400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/users/user.controller.js.map": {
+      "size": 2044,
+      "mtime_nanos": 1773295670057017800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/users/user.service.d.ts.map": {
+      "size": 1116,
+      "mtime_nanos": 1773052098835710200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/modules/categories/category.controller.js": {
+      "size": 1767,
+      "mtime_nanos": 1773295670324018300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/backend/dist/shared/cache/redis.js.map": {
+      "size": 1486,
+      "mtime_nanos": 1773295669985773900,
+      "mode": 420,
+      "is_dir": false
+    }
+  },
+  "order": [
+    "packages/backend/.turbo/turbo-build.log",
+    "packages/backend/dist",
+    "packages/backend/dist/app.js",
+    "packages/backend/dist/app.js.map",
+    "packages/backend/dist/config",
+    "packages/backend/dist/config/env.d.ts",
+    "packages/backend/dist/config/env.d.ts.map",
+    "packages/backend/dist/config/env.js",
+    "packages/backend/dist/config/env.js.map",
+    "packages/backend/dist/config/index.d.ts",
+    "packages/backend/dist/config/index.d.ts.map",
+    "packages/backend/dist/config/index.js",
+    "packages/backend/dist/config/index.js.map",
+    "packages/backend/dist/graphql",
+    "packages/backend/dist/graphql/index.js",
+    "packages/backend/dist/graphql/index.js.map",
+    "packages/backend/dist/graphql/resolvers.js",
+    "packages/backend/dist/graphql/resolvers.js.map",
+    "packages/backend/dist/graphql/typeDefs.js",
+    "packages/backend/dist/graphql/typeDefs.js.map",
+    "packages/backend/dist/middleware",
+    "packages/backend/dist/middleware/auth.d.ts",
+    "packages/backend/dist/middleware/auth.d.ts.map",
+    "packages/backend/dist/middleware/auth.js",
+    "packages/backend/dist/middleware/auth.js.map",
+    "packages/backend/dist/middleware/errorHandler.d.ts",
+    "packages/backend/dist/middleware/errorHandler.d.ts.map",
+    "packages/backend/dist/middleware/errorHandler.js",
+    "packages/backend/dist/middleware/errorHandler.js.map",
+    "packages/backend/dist/middleware/index.d.ts",
+    "packages/backend/dist/middleware/index.d.ts.map",
+    "packages/backend/dist/middleware/index.js",
+    "packages/backend/dist/middleware/index.js.map",
+    "packages/backend/dist/middleware/rateLimiter.d.ts",
+    "packages/backend/dist/middleware/rateLimiter.d.ts.map",
+    "packages/backend/dist/middleware/rateLimiter.js",
+    "packages/backend/dist/middleware/rateLimiter.js.map",
+    "packages/backend/dist/middleware/validate.d.ts",
+    "packages/backend/dist/middleware/validate.d.ts.map",
+    "packages/backend/dist/middleware/validate.js",
+    "packages/backend/dist/middleware/validate.js.map",
+    "packages/backend/dist/modules",
+    "packages/backend/dist/modules/ai",
+    "packages/backend/dist/modules/ai/ai.controller.d.ts",
+    "packages/backend/dist/modules/ai/ai.controller.d.ts.map",
+    "packages/backend/dist/modules/ai/ai.controller.js",
+    "packages/backend/dist/modules/ai/ai.controller.js.map",
+    "packages/backend/dist/modules/ai/ai.routes.js",
+    "packages/backend/dist/modules/ai/ai.routes.js.map",
+    "packages/backend/dist/modules/ai/ai.service.d.ts",
+    "packages/backend/dist/modules/ai/ai.service.d.ts.map",
+    "packages/backend/dist/modules/ai/ai.service.js",
+    "packages/backend/dist/modules/ai/ai.service.js.map",
+    "packages/backend/dist/modules/auth",
+    "packages/backend/dist/modules/auth/auth.controller.d.ts",
+    "packages/backend/dist/modules/auth/auth.controller.d.ts.map",
+    "packages/backend/dist/modules/auth/auth.controller.js",
+    "packages/backend/dist/modules/auth/auth.controller.js.map",
+    "packages/backend/dist/modules/auth/auth.routes.js",
+    "packages/backend/dist/modules/auth/auth.routes.js.map",
+    "packages/backend/dist/modules/auth/auth.service.d.ts",
+    "packages/backend/dist/modules/auth/auth.service.d.ts.map",
+    "packages/backend/dist/modules/auth/auth.service.js",
+    "packages/backend/dist/modules/auth/auth.service.js.map",
+    "packages/backend/dist/modules/budgets",
+    "packages/backend/dist/modules/budgets/budget.controller.d.ts",
+    "packages/backend/dist/modules/budgets/budget.controller.d.ts.map",
+    "packages/backend/dist/modules/budgets/budget.controller.js",
+    "packages/backend/dist/modules/budgets/budget.controller.js.map",
+    "packages/backend/dist/modules/budgets/budget.routes.js",
+    "packages/backend/dist/modules/budgets/budget.routes.js.map",
+    "packages/backend/dist/modules/budgets/budget.service.d.ts",
+    "packages/backend/dist/modules/budgets/budget.service.d.ts.map",
+    "packages/backend/dist/modules/budgets/budget.service.js",
+    "packages/backend/dist/modules/budgets/budget.service.js.map",
+    "packages/backend/dist/modules/categories",
+    "packages/backend/dist/modules/categories/category.controller.d.ts",
+    "packages/backend/dist/modules/categories/category.controller.d.ts.map",
+    "packages/backend/dist/modules/categories/category.controller.js",
+    "packages/backend/dist/modules/categories/category.controller.js.map",
+    "packages/backend/dist/modules/categories/category.routes.js",
+    "packages/backend/dist/modules/categories/category.routes.js.map",
+    "packages/backend/dist/modules/categories/category.service.d.ts",
+    "packages/backend/dist/modules/categories/category.service.d.ts.map",
+    "packages/backend/dist/modules/categories/category.service.js",
+    "packages/backend/dist/modules/categories/category.service.js.map",
+    "packages/backend/dist/modules/expenses",
+    "packages/backend/dist/modules/expenses/expense.controller.d.ts",
+    "packages/backend/dist/modules/expenses/expense.controller.d.ts.map",
+    "packages/backend/dist/modules/expenses/expense.controller.js",
+    "packages/backend/dist/modules/expenses/expense.controller.js.map",
+    "packages/backend/dist/modules/expenses/expense.routes.js",
+    "packages/backend/dist/modules/expenses/expense.routes.js.map",
+    "packages/backend/dist/modules/expenses/expense.service.d.ts",
+    "packages/backend/dist/modules/expenses/expense.service.d.ts.map",
+    "packages/backend/dist/modules/expenses/expense.service.js",
+    "packages/backend/dist/modules/expenses/expense.service.js.map",
+    "packages/backend/dist/modules/groups",
+    "packages/backend/dist/modules/groups/group.controller.d.ts",
+    "packages/backend/dist/modules/groups/group.controller.d.ts.map",
+    "packages/backend/dist/modules/groups/group.controller.js",
+    "packages/backend/dist/modules/groups/group.controller.js.map",
+    "packages/backend/dist/modules/groups/group.routes.js",
+    "packages/backend/dist/modules/groups/group.routes.js.map",
+    "packages/backend/dist/modules/groups/group.service.d.ts",
+    "packages/backend/dist/modules/groups/group.service.d.ts.map",
+    "packages/backend/dist/modules/groups/group.service.js",
+    "packages/backend/dist/modules/groups/group.service.js.map",
+    "packages/backend/dist/modules/reports",
+    "packages/backend/dist/modules/reports/report.controller.js",
+    "packages/backend/dist/modules/reports/report.controller.js.map",
+    "packages/backend/dist/modules/reports/report.routes.js",
+    "packages/backend/dist/modules/reports/report.routes.js.map",
+    "packages/backend/dist/modules/reports/report.service.js",
+    "packages/backend/dist/modules/reports/report.service.js.map",
+    "packages/backend/dist/modules/settlements",
+    "packages/backend/dist/modules/settlements/settlement.controller.d.ts",
+    "packages/backend/dist/modules/settlements/settlement.controller.d.ts.map",
+    "packages/backend/dist/modules/settlements/settlement.controller.js",
+    "packages/backend/dist/modules/settlements/settlement.controller.js.map",
+    "packages/backend/dist/modules/settlements/settlement.routes.js",
+    "packages/backend/dist/modules/settlements/settlement.routes.js.map",
+    "packages/backend/dist/modules/settlements/settlement.service.d.ts",
+    "packages/backend/dist/modules/settlements/settlement.service.d.ts.map",
+    "packages/backend/dist/modules/settlements/settlement.service.js",
+    "packages/backend/dist/modules/settlements/settlement.service.js.map",
+    "packages/backend/dist/modules/transactions",
+    "packages/backend/dist/modules/transactions/transaction.controller.d.ts",
+    "packages/backend/dist/modules/transactions/transaction.controller.d.ts.map",
+    "packages/backend/dist/modules/transactions/transaction.controller.js",
+    "packages/backend/dist/modules/transactions/transaction.controller.js.map",
+    "packages/backend/dist/modules/transactions/transaction.routes.js",
+    "packages/backend/dist/modules/transactions/transaction.routes.js.map",
+    "packages/backend/dist/modules/transactions/transaction.service.d.ts",
+    "packages/backend/dist/modules/transactions/transaction.service.d.ts.map",
+    "packages/backend/dist/modules/transactions/transaction.service.js",
+    "packages/backend/dist/modules/transactions/transaction.service.js.map",
+    "packages/backend/dist/modules/uploads",
+    "packages/backend/dist/modules/uploads/upload.controller.d.ts",
+    "packages/backend/dist/modules/uploads/upload.controller.d.ts.map",
+    "packages/backend/dist/modules/uploads/upload.controller.js",
+    "packages/backend/dist/modules/uploads/upload.controller.js.map",
+    "packages/backend/dist/modules/uploads/upload.routes.js",
+    "packages/backend/dist/modules/uploads/upload.routes.js.map",
+    "packages/backend/dist/modules/users",
+    "packages/backend/dist/modules/users/user.controller.d.ts",
+    "packages/backend/dist/modules/users/user.controller.d.ts.map",
+    "packages/backend/dist/modules/users/user.controller.js",
+    "packages/backend/dist/modules/users/user.controller.js.map",
+    "packages/backend/dist/modules/users/user.routes.js",
+    "packages/backend/dist/modules/users/user.routes.js.map",
+    "packages/backend/dist/modules/users/user.service.d.ts",
+    "packages/backend/dist/modules/users/user.service.d.ts.map",
+    "packages/backend/dist/modules/users/user.service.js",
+    "packages/backend/dist/modules/users/user.service.js.map",
+    "packages/backend/dist/server.d.ts",
+    "packages/backend/dist/server.d.ts.map",
+    "packages/backend/dist/server.js",
+    "packages/backend/dist/server.js.map",
+    "packages/backend/dist/shared",
+    "packages/backend/dist/shared/cache",
+    "packages/backend/dist/shared/cache/redis.d.ts",
+    "packages/backend/dist/shared/cache/redis.d.ts.map",
+    "packages/backend/dist/shared/cache/redis.js",
+    "packages/backend/dist/shared/cache/redis.js.map",
+    "packages/backend/dist/shared/database",
+    "packages/backend/dist/shared/database/prisma.d.ts",
+    "packages/backend/dist/shared/database/prisma.d.ts.map",
+    "packages/backend/dist/shared/database/prisma.js",
+    "packages/backend/dist/shared/database/prisma.js.map",
+    "packages/backend/dist/shared/logger.d.ts",
+    "packages/backend/dist/shared/logger.d.ts.map",
+    "packages/backend/dist/shared/logger.js",
+    "packages/backend/dist/shared/logger.js.map",
+    "packages/backend/dist/shared/queue",
+    "packages/backend/dist/shared/queue/bullQueue.d.ts",
+    "packages/backend/dist/shared/queue/bullQueue.d.ts.map",
+    "packages/backend/dist/shared/queue/bullQueue.js",
+    "packages/backend/dist/shared/queue/bullQueue.js.map",
+    "packages/backend/dist/shared/services",
+    "packages/backend/dist/shared/services/currency.js",
+    "packages/backend/dist/shared/services/currency.js.map",
+    "packages/backend/dist/shared/services/email.d.ts",
+    "packages/backend/dist/shared/services/email.d.ts.map",
+    "packages/backend/dist/shared/services/email.js",
+    "packages/backend/dist/shared/services/email.js.map",
+    "packages/backend/dist/shared/services/ocr.d.ts",
+    "packages/backend/dist/shared/services/ocr.d.ts.map",
+    "packages/backend/dist/shared/services/ocr.js",
+    "packages/backend/dist/shared/services/ocr.js.map",
+    "packages/backend/dist/shared/services/s3.d.ts",
+    "packages/backend/dist/shared/services/s3.d.ts.map",
+    "packages/backend/dist/shared/services/s3.js",
+    "packages/backend/dist/shared/services/s3.js.map",
+    "packages/backend/dist/shared/services/upload.js",
+    "packages/backend/dist/shared/services/upload.js.map",
+    "packages/backend/dist/shared/socket",
+    "packages/backend/dist/shared/socket/socketServer.d.ts",
+    "packages/backend/dist/shared/socket/socketServer.d.ts.map",
+    "packages/backend/dist/shared/socket/socketServer.js",
+    "packages/backend/dist/shared/socket/socketServer.js.map"
+  ]
+}

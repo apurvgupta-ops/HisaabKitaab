@@ -5,14 +5,11 @@ import {
   type FetchArgs,
   type FetchBaseQueryError,
 } from '@reduxjs/toolkit/query/react';
-import { Mutex } from 'async-mutex';
-import { clearCredentials, setCredentials, type UserData } from '../slices/authSlice';
 import { API_BASE } from '@/lib/api';
+import { clearCredentials } from '../slices/authSlice';
 
 interface AuthSliceState {
   token: string | null;
-  refreshToken: string | null;
-  user: UserData | null;
 }
 
 const rawBaseQuery = fetchBaseQuery({
@@ -26,75 +23,26 @@ const rawBaseQuery = fetchBaseQuery({
   },
 });
 
-const refreshMutex = new Mutex();
-
 /**
  * Wraps fetchBaseQuery to:
  * 1. Unwrap the backend's `{ success, data, error }` envelope
- * 2. On 401, attempt a token refresh before giving up
- * 3. Uses a mutex to prevent concurrent refresh attempts
+ * 2. Auto-redirect to /login on 401 Unauthorized
  */
-const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
+const baseQueryWithUnwrap: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
   args,
   api,
   extraOptions,
 ) => {
-  await refreshMutex.waitForUnlock();
-
-  let result = await rawBaseQuery(args, api, extraOptions);
-
-  if (result.error && result.error.status === 401) {
-    if (!refreshMutex.isLocked()) {
-      const release = await refreshMutex.acquire();
-      try {
-        const { refreshToken, user } = (api.getState() as { auth: AuthSliceState }).auth;
-
-        if (refreshToken) {
-          const refreshResult = await rawBaseQuery(
-            {
-              url: 'auth/refresh',
-              method: 'POST',
-              body: { refreshToken },
-            },
-            api,
-            extraOptions,
-          );
-
-          const refreshBody = refreshResult.data as
-            | { success: boolean; data: { accessToken: string; refreshToken: string } }
-            | undefined;
-
-          if (refreshBody?.success && refreshBody.data) {
-            api.dispatch(
-              setCredentials({
-                user: user!,
-                accessToken: refreshBody.data.accessToken,
-                refreshToken: refreshBody.data.refreshToken,
-              }),
-            );
-            result = await rawBaseQuery(args, api, extraOptions);
-          } else {
-            api.dispatch(clearCredentials());
-            if (typeof window !== 'undefined') {
-              window.location.href = '/login';
-            }
-          }
-        } else {
-          api.dispatch(clearCredentials());
-          if (typeof window !== 'undefined') {
-            window.location.href = '/login';
-          }
-        }
-      } finally {
-        release();
-      }
-    } else {
-      await refreshMutex.waitForUnlock();
-      result = await rawBaseQuery(args, api, extraOptions);
-    }
-  }
+  const result = await rawBaseQuery(args, api, extraOptions);
 
   if (result.error) {
+    if (result.error.status === 401) {
+      api.dispatch(clearCredentials());
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
+    }
+
     const errData = result.error.data as { error?: { message?: string } } | undefined;
     return {
       error: {
@@ -119,16 +67,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 
 export const apiSlice = createApi({
   reducerPath: 'api',
-  baseQuery: baseQueryWithReauth,
-  tagTypes: [
-    'User',
-    'Group',
-    'Expense',
-    'Settlement',
-    'Transaction',
-    'Budget',
-    'Category',
-    'FeatureFlags',
-  ],
+  baseQuery: baseQueryWithUnwrap,
+  tagTypes: ['User', 'Group', 'Expense', 'Settlement', 'Transaction', 'Budget', 'Category'],
   endpoints: () => ({}),
 });

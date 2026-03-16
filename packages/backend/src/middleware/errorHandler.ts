@@ -1,7 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
-import { Prisma } from '@prisma/client';
-import * as Sentry from '@sentry/node';
 import { logger } from '../shared/logger';
 
 export class AppError extends Error {
@@ -61,7 +59,7 @@ const formatZodError = (error: ZodError): Record<string, string[]> => {
 
 export const errorHandler = (
   err: Error,
-  req: Request,
+  _req: Request,
   res: Response,
   _next: NextFunction,
 ): void => {
@@ -126,57 +124,7 @@ export const errorHandler = (
     return;
   }
 
-  if (err instanceof Prisma.PrismaClientKnownRequestError) {
-    switch (err.code) {
-      case 'P2002': {
-        const target = (err.meta?.target as string[])?.join(', ') ?? 'field';
-        res.status(409).json({
-          success: false,
-          error: {
-            code: 'CONFLICT',
-            message: `A record with this ${target} already exists`,
-          },
-        });
-        return;
-      }
-      case 'P2025':
-        res.status(404).json({
-          success: false,
-          error: {
-            code: 'NOT_FOUND',
-            message: 'The requested record was not found',
-          },
-        });
-        return;
-      case 'P2003':
-        res.status(400).json({
-          success: false,
-          error: {
-            code: 'FOREIGN_KEY_VIOLATION',
-            message: 'Referenced record does not exist',
-          },
-        });
-        return;
-      default:
-        logger.error({ err, prismaCode: err.code }, 'Unhandled Prisma error');
-    }
-  }
-
-  if (err instanceof Prisma.PrismaClientValidationError) {
-    res.status(400).json({
-      success: false,
-      error: {
-        code: 'VALIDATION_ERROR',
-        message: 'Invalid data provided to database query',
-      },
-    });
-    return;
-  }
-
-  logger.error({ err, requestId: (req as any).requestId }, 'Unhandled error');
-  Sentry.captureException(err, {
-    extra: { requestId: (req as any).requestId, url: req.originalUrl },
-  });
+  logger.error({ err }, 'Unhandled error');
 
   res.status(500).json({
     success: false,

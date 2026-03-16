@@ -7,4 +7,3 @@ export * from './budget';
 export * from './category';
 export * from './auth';
 export * from './api';
-export * from './featureFlag';

@@ -1,0 +1,721 @@
+{
+  "files": {
+    "packages/shared/dist/schemas/index.d.ts": {
+      "size": 339,
+      "mtime_nanos": 1773294552199880100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/utils/date.d.ts.map": {
+      "size": 385,
+      "mtime_nanos": 1773294552296513800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/category.js": {
+      "size": 1269,
+      "mtime_nanos": 1773294551714035000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/expense.schema.js.map": {
+      "size": 4412,
+      "mtime_nanos": 1773294551989046300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/common.schema.js": {
+      "size": 1086,
+      "mtime_nanos": 1773294551893257500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/auth.d.ts": {
+      "size": 832,
+      "mtime_nanos": 1773294551779548600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/group.schema.d.ts.map": {
+      "size": 655,
+      "mtime_nanos": 1773294551970045400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/utils/pagination.d.ts.map": {
+      "size": 449,
+      "mtime_nanos": 1773294552327063400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/index.d.ts": {
+      "size": 112,
+      "mtime_nanos": 1773294552385265400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/user.schema.js.map": {
+      "size": 1204,
+      "mtime_nanos": 1773294551916257400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/utils/currency.d.ts.map": {
+      "size": 613,
+      "mtime_nanos": 1773294552247629600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/transaction.schema.js.map": {
+      "size": 2185,
+      "mtime_nanos": 1773294552072921400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/api.d.ts": {
+      "size": 626,
+      "mtime_nanos": 1773294551809744100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/settlement.js.map": {
+      "size": 121,
+      "mtime_nanos": 1773294551618136800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/utils/pagination.js.map": {
+      "size": 587,
+      "mtime_nanos": 1773294552306064400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/user.js.map": {
+      "size": 109,
+      "mtime_nanos": 1773294551506857400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/group.js": {
+      "size": 110,
+      "mtime_nanos": 1773294551562791900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/common.schema.js.map": {
+      "size": 1114,
+      "mtime_nanos": 1773294551885258100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/expense.schema.js": {
+      "size": 3851,
+      "mtime_nanos": 1773294551998045400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/settlement.schema.d.ts.map": {
+      "size": 409,
+      "mtime_nanos": 1773294552052744400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/utils/currency.js.map": {
+      "size": 3207,
+      "mtime_nanos": 1773294552217376400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/group.d.ts": {
+      "size": 1130,
+      "mtime_nanos": 1773294551579791800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/user.schema.js": {
+      "size": 1186,
+      "mtime_nanos": 1773294551924526900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/index.js": {
+      "size": 1190,
+      "mtime_nanos": 1773294551826744400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/settlement.schema.d.ts": {
+      "size": 1330,
+      "mtime_nanos": 1773294552062918100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/settlement.d.ts": {
+      "size": 823,
+      "mtime_nanos": 1773294551645139200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/budget.js": {
+      "size": 111,
+      "mtime_nanos": 1773294551686035000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/shared/dist/types/settlement.js": {
+      "size": 115,
+      "mtime_nanos": 1773294551629137600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/expense.js.map": {
+      "size": 115,
+      "mtime_nanos": 1773294551585793300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/index.js.map": {
+      "size": 244,
+      "mtime_nanos": 1773294552172391000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/user.schema.d.ts": {
+      "size": 2987,
+      "mtime_nanos": 1773294551944537000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/api.js.map": {
+      "size": 107,
+      "mtime_nanos": 1773294551784548500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/transaction.d.ts.map": {
+      "size": 1426,
+      "mtime_nanos": 1773294551671036400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/user.d.ts": {
+      "size": 820,
+      "mtime_nanos": 1773294551545761800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/index.js": {
+      "size": 921,
+      "mtime_nanos": 1773294552370266200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/expense.js": {
+      "size": 112,
+      "mtime_nanos": 1773294551594910400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/utils/date.js": {
+      "size": 2053,
+      "mtime_nanos": 1773294552284511900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/auth.schema.d.ts": {
+      "size": 1484,
+      "mtime_nanos": 1773294551878257500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/transaction.schema.d.ts": {
+      "size": 3879,
+      "mtime_nanos": 1773294552099918300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/group.schema.js": {
+      "size": 1660,
+      "mtime_nanos": 1773294551961046100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/index.js": {
+      "size": 1256,
+      "mtime_nanos": 1773294552179650200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/category.js.map": {
+      "size": 1369,
+      "mtime_nanos": 1773294551705035400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/utils/pagination.d.ts": {
+      "size": 420,
+      "mtime_nanos": 1773294552337062800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/utils/pagination.js": {
+      "size": 629,
+      "mtime_nanos": 1773294552315063600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/.turbo/turbo-build.log": {
+      "size": 40,
+      "mtime_nanos": 1773294552834792600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/transaction.schema.d.ts.map": {
+      "size": 580,
+      "mtime_nanos": 1773294552091919800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/auth.schema.d.ts.map": {
+      "size": 706,
+      "mtime_nanos": 1773294551875259500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/index.js.map": {
+      "size": 155,
+      "mtime_nanos": 1773294552367266000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/expense.schema.d.ts": {
+      "size": 11823,
+      "mtime_nanos": 1773294552025741000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/budget.js.map": {
+      "size": 113,
+      "mtime_nanos": 1773294551681035000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/expense.d.ts": {
+      "size": 1727,
+      "mtime_nanos": 1773294551610137000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/transaction.d.ts": {
+      "size": 1213,
+      "mtime_nanos": 1773294551677035600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/category.schema.js.map": {
+      "size": 868,
+      "mtime_nanos": 1773294552143921500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/group.schema.d.ts": {
+      "size": 3881,
+      "mtime_nanos": 1773294551978047700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/utils/date.d.ts": {
+      "size": 496,
+      "mtime_nanos": 1773294552300062700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/expense.schema.d.ts.map": {
+      "size": 838,
+      "mtime_nanos": 1773294552017346900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/index.d.ts": {
+      "size": 273,
+      "mtime_nanos": 1773294551843747200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/auth.d.ts.map": {
+      "size": 921,
+      "mtime_nanos": 1773294551764550300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/auth.js": {
+      "size": 109,
+      "mtime_nanos": 1773294551753038700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/index.d.ts.map": {
+      "size": 165,
+      "mtime_nanos": 1773294552381265200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/budget.d.ts.map": {
+      "size": 868,
+      "mtime_nanos": 1773294551693035400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/group.schema.js.map": {
+      "size": 1684,
+      "mtime_nanos": 1773294551954539500,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/shared/dist/schemas/category.schema.js": {
+      "size": 820,
+      "mtime_nanos": 1773294552147920900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/auth.schema.js.map": {
+      "size": 1305,
+      "mtime_nanos": 1773294551852751000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/api.d.ts.map": {
+      "size": 785,
+      "mtime_nanos": 1773294551801549200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/index.d.ts.map": {
+      "size": 316,
+      "mtime_nanos": 1773294552193298800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/budget.d.ts": {
+      "size": 743,
+      "mtime_nanos": 1773294551698035200,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/category.d.ts.map": {
+      "size": 536,
+      "mtime_nanos": 1773294551736037300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/budget.schema.js": {
+      "size": 1043,
+      "mtime_nanos": 1773294552116918700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/group.js.map": {
+      "size": 111,
+      "mtime_nanos": 1773294551550759900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/index.d.ts.map": {
+      "size": 300,
+      "mtime_nanos": 1773294551835745600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/transaction.js": {
+      "size": 116,
+      "mtime_nanos": 1773294551660035400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/transaction.js.map": {
+      "size": 123,
+      "mtime_nanos": 1773294551651645300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/api.js": {
+      "size": 108,
+      "mtime_nanos": 1773294551794549100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/utils": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/shared/dist/utils/date.js.map": {
+      "size": 2201,
+      "mtime_nanos": 1773294552268511700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/settlement.schema.js": {
+      "size": 816,
+      "mtime_nanos": 1773294552044744700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/budget.schema.d.ts.map": {
+      "size": 413,
+      "mtime_nanos": 1773294552129918900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/common.schema.d.ts.map": {
+      "size": 385,
+      "mtime_nanos": 1773294551902256900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/settlement.schema.js.map": {
+      "size": 687,
+      "mtime_nanos": 1773294552034741300,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/utils/currency.d.ts": {
+      "size": 1162,
+      "mtime_nanos": 1773294552260512000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/user.js": {
+      "size": 109,
+      "mtime_nanos": 1773294551518856600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/utils/index.d.ts.map": {
+      "size": 174,
+      "mtime_nanos": 1773294552359266600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/budget.schema.d.ts": {
+      "size": 1853,
+      "mtime_nanos": 1773294552134921400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/index.js.map": {
+      "size": 242,
+      "mtime_nanos": 1773294551815743700,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/transaction.schema.js": {
+      "size": 2020,
+      "mtime_nanos": 1773294552079918600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/settlement.d.ts.map": {
+      "size": 945,
+      "mtime_nanos": 1773294551634142800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/utils/index.js": {
+      "size": 926,
+      "mtime_nanos": 1773294552349067400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/expense.d.ts.map": {
+      "size": 2027,
+      "mtime_nanos": 1773294551603137600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/user.d.ts.map": {
+      "size": 919,
+      "mtime_nanos": 1773294551539812000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/category.d.ts": {
+      "size": 2070,
+      "mtime_nanos": 1773294551744038900,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/auth.js.map": {
+      "size": 109,
+      "mtime_nanos": 1773294551749038800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/user.schema.d.ts.map": {
+      "size": 437,
+      "mtime_nanos": 1773294551939533100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/utils/index.js.map": {
+      "size": 164,
+      "mtime_nanos": 1773294552345067600,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/common.schema.d.ts": {
+      "size": 1112,
+      "mtime_nanos": 1773294551908261800,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/category.schema.d.ts": {
+      "size": 1026,
+      "mtime_nanos": 1773294552164031000,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas": { "size": 0, "mtime_nanos": 0, "mode": 0, "is_dir": true },
+    "packages/shared/dist/schemas/budget.schema.js.map": {
+      "size": 1043,
+      "mtime_nanos": 1773294552112918400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/category.schema.d.ts.map": {
+      "size": 405,
+      "mtime_nanos": 1773294552158031400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/schemas/auth.schema.js": {
+      "size": 1638,
+      "mtime_nanos": 1773294551860257400,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/types/group.d.ts.map": {
+      "size": 1271,
+      "mtime_nanos": 1773294551573794100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/utils/currency.js": {
+      "size": 3202,
+      "mtime_nanos": 1773294552227734100,
+      "mode": 420,
+      "is_dir": false
+    },
+    "packages/shared/dist/utils/index.d.ts": {
+      "size": 117,
+      "mtime_nanos": 1773294552364265500,
+      "mode": 420,
+      "is_dir": false
+    }
+  },
+  "order": [
+    "packages/shared/.turbo/turbo-build.log",
+    "packages/shared/dist",
+    "packages/shared/dist/index.d.ts",
+    "packages/shared/dist/index.d.ts.map",
+    "packages/shared/dist/index.js",
+    "packages/shared/dist/index.js.map",
+    "packages/shared/dist/schemas",
+    "packages/shared/dist/schemas/auth.schema.d.ts",
+    "packages/shared/dist/schemas/auth.schema.d.ts.map",
+    "packages/shared/dist/schemas/auth.schema.js",
+    "packages/shared/dist/schemas/auth.schema.js.map",
+    "packages/shared/dist/schemas/budget.schema.d.ts",
+    "packages/shared/dist/schemas/budget.schema.d.ts.map",
+    "packages/shared/dist/schemas/budget.schema.js",
+    "packages/shared/dist/schemas/budget.schema.js.map",
+    "packages/shared/dist/schemas/category.schema.d.ts",
+    "packages/shared/dist/schemas/category.schema.d.ts.map",
+    "packages/shared/dist/schemas/category.schema.js",
+    "packages/shared/dist/schemas/category.schema.js.map",
+    "packages/shared/dist/schemas/common.schema.d.ts",
+    "packages/shared/dist/schemas/common.schema.d.ts.map",
+    "packages/shared/dist/schemas/common.schema.js",
+    "packages/shared/dist/schemas/common.schema.js.map",
+    "packages/shared/dist/schemas/expense.schema.d.ts",
+    "packages/shared/dist/schemas/expense.schema.d.ts.map",
+    "packages/shared/dist/schemas/expense.schema.js",
+    "packages/shared/dist/schemas/expense.schema.js.map",
+    "packages/shared/dist/schemas/group.schema.d.ts",
+    "packages/shared/dist/schemas/group.schema.d.ts.map",
+    "packages/shared/dist/schemas/group.schema.js",
+    "packages/shared/dist/schemas/group.schema.js.map",
+    "packages/shared/dist/schemas/index.d.ts",
+    "packages/shared/dist/schemas/index.d.ts.map",
+    "packages/shared/dist/schemas/index.js",
+    "packages/shared/dist/schemas/index.js.map",
+    "packages/shared/dist/schemas/settlement.schema.d.ts",
+    "packages/shared/dist/schemas/settlement.schema.d.ts.map",
+    "packages/shared/dist/schemas/settlement.schema.js",
+    "packages/shared/dist/schemas/settlement.schema.js.map",
+    "packages/shared/dist/schemas/transaction.schema.d.ts",
+    "packages/shared/dist/schemas/transaction.schema.d.ts.map",
+    "packages/shared/dist/schemas/transaction.schema.js",
+    "packages/shared/dist/schemas/transaction.schema.js.map",
+    "packages/shared/dist/schemas/user.schema.d.ts",
+    "packages/shared/dist/schemas/user.schema.d.ts.map",
+    "packages/shared/dist/schemas/user.schema.js",
+    "packages/shared/dist/schemas/user.schema.js.map",
+    "packages/shared/dist/types",
+    "packages/shared/dist/types/api.d.ts",
+    "packages/shared/dist/types/api.d.ts.map",
+    "packages/shared/dist/types/api.js",
+    "packages/shared/dist/types/api.js.map",
+    "packages/shared/dist/types/auth.d.ts",
+    "packages/shared/dist/types/auth.d.ts.map",
+    "packages/shared/dist/types/auth.js",
+    "packages/shared/dist/types/auth.js.map",
+    "packages/shared/dist/types/budget.d.ts",
+    "packages/shared/dist/types/budget.d.ts.map",
+    "packages/shared/dist/types/budget.js",
+    "packages/shared/dist/types/budget.js.map",
+    "packages/shared/dist/types/category.d.ts",
+    "packages/shared/dist/types/category.d.ts.map",
+    "packages/shared/dist/types/category.js",
+    "packages/shared/dist/types/category.js.map",
+    "packages/shared/dist/types/expense.d.ts",
+    "packages/shared/dist/types/expense.d.ts.map",
+    "packages/shared/dist/types/expense.js",
+    "packages/shared/dist/types/expense.js.map",
+    "packages/shared/dist/types/group.d.ts",
+    "packages/shared/dist/types/group.d.ts.map",
+    "packages/shared/dist/types/group.js",
+    "packages/shared/dist/types/group.js.map",
+    "packages/shared/dist/types/index.d.ts",
+    "packages/shared/dist/types/index.d.ts.map",
+    "packages/shared/dist/types/index.js",
+    "packages/shared/dist/types/index.js.map",
+    "packages/shared/dist/types/settlement.d.ts",
+    "packages/shared/dist/types/settlement.d.ts.map",
+    "packages/shared/dist/types/settlement.js",
+    "packages/shared/dist/types/settlement.js.map",
+    "packages/shared/dist/types/transaction.d.ts",
+    "packages/shared/dist/types/transaction.d.ts.map",
+    "packages/shared/dist/types/transaction.js",
+    "packages/shared/dist/types/transaction.js.map",
+    "packages/shared/dist/types/user.d.ts",
+    "packages/shared/dist/types/user.d.ts.map",
+    "packages/shared/dist/types/user.js",
+    "packages/shared/dist/types/user.js.map",
+    "packages/shared/dist/utils",
+    "packages/shared/dist/utils/currency.d.ts",
+    "packages/shared/dist/utils/currency.d.ts.map",
+    "packages/shared/dist/utils/currency.js",
+    "packages/shared/dist/utils/currency.js.map",
+    "packages/shared/dist/utils/date.d.ts",
+    "packages/shared/dist/utils/date.d.ts.map",
+    "packages/shared/dist/utils/date.js",
+    "packages/shared/dist/utils/date.js.map",
+    "packages/shared/dist/utils/index.d.ts",
+    "packages/shared/dist/utils/index.d.ts.map",
+    "packages/shared/dist/utils/index.js",
+    "packages/shared/dist/utils/index.js.map",
+    "packages/shared/dist/utils/pagination.d.ts",
+    "packages/shared/dist/utils/pagination.d.ts.map",
+    "packages/shared/dist/utils/pagination.js",
+    "packages/shared/dist/utils/pagination.js.map"
+  ]
+}

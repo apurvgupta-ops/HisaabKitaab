@@ -60,7 +60,7 @@ export const expenseApi = apiSlice.injectEndpoints({
     updateExpense: builder.mutation<ExpenseWithDetails, UpdateExpenseRequest>({
       query: ({ id, ...body }) => ({
         url: `expenses/${id}`,
-        method: 'PATCH',
+        method: 'PUT',
         body,
       }),
       invalidatesTags: ['Expense', 'Settlement'],
