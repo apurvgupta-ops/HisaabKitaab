@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useEffect } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
   Users,
@@ -19,28 +19,24 @@ import {
   LogOut,
   User,
   SlidersHorizontal,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { cn } from "@/lib/utils";
-import { useAppSelector, useAppDispatch } from "@/store/hooks";
-import { toggleSidebar } from "@/store/slices/uiSlice";
-import { clearCredentials } from "@/store/slices/authSlice";
-import { useLogoutMutation } from "@/store/api/authApi";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { cn } from '@/lib/utils';
+import { useAppSelector, useAppDispatch } from '@/store/hooks';
+import { toggleSidebar } from '@/store/slices/uiSlice';
+import { clearCredentials } from '@/store/slices/authSlice';
+import { useLogoutMutation } from '@/store/api/authApi';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 
 interface NavItem {
   label: string;
@@ -55,41 +51,39 @@ interface NavSection {
 
 const navSections: NavSection[] = [
   {
-    title: "Main",
+    title: 'Main',
     items: [
-      { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-      { label: "Groups", href: "/groups", icon: Users },
-      { label: "Activity", href: "/activity", icon: Bell },
+      { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+      { label: 'Groups', href: '/groups', icon: Users },
+      { label: 'Activity', href: '/activity', icon: Bell },
     ],
   },
   {
-    title: "Finance",
+    title: 'Finance',
     items: [
-      { label: "Transactions", href: "/transactions", icon: ArrowLeftRight },
-      { label: "Budgets", href: "/budgets", icon: PiggyBank },
-      { label: "Reports", href: "/reports", icon: BarChart3 },
+      { label: 'Transactions', href: '/transactions', icon: ArrowLeftRight },
+      { label: 'Budgets', href: '/budgets', icon: PiggyBank },
+      { label: 'Reports', href: '/reports', icon: BarChart3 },
     ],
   },
   {
-    title: "AI",
+    title: 'AI',
     items: [
-      { label: "Smart Categorize", href: "/categorize", icon: Sparkles },
-      { label: "Insights", href: "/insights", icon: Brain },
+      { label: 'Smart Categorize', href: '/categorize', icon: Sparkles },
+      { label: 'Insights', href: '/insights', icon: Brain },
     ],
   },
 ];
 
-const bottomNav: NavItem[] = [
-  { label: "Settings", href: "/settings", icon: Settings },
-];
+const bottomNav: NavItem[] = [{ label: 'Settings', href: '/settings', icon: Settings }];
 
 const getInitials = (name: string | undefined): string => {
-  if (!name) return "U";
+  if (!name) return 'U';
   const parts = name.trim().split(/\s+/);
   return parts
     .slice(0, 2)
     .map((p) => p[0]?.toUpperCase())
-    .join("");
+    .join('');
 };
 
 interface SidebarProps {
@@ -111,10 +105,10 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
     } catch {
       /* proceed even if the API call fails */
     }
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     dispatch(clearCredentials());
-    router.push("/login");
+    router.push('/login');
   }, [logout, dispatch, router]);
 
   useEffect(() => {
@@ -126,17 +120,16 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
   // Keyboard shortcut: [ toggles sidebar collapse
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "[" && (e.metaKey || e.ctrlKey)) {
+      if (e.key === '[' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         dispatch(toggleSidebar());
       }
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [dispatch]);
 
-  const isActive = (href: string) =>
-    pathname === href || pathname.startsWith(`${href}/`);
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
   const renderNavItem = (item: NavItem) => {
     const active = isActive(item.href);
@@ -146,29 +139,27 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
       <Link
         href={item.href}
         className={cn(
-          "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium",
-          "transition-colors duration-150",
+          'group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium',
+          'transition-colors duration-150',
           active
-            ? "bg-primary/10 text-primary"
-            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-          collapsed && "justify-center px-2"
+            ? 'bg-primary/10 text-primary'
+            : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground',
+          collapsed && 'justify-center px-2',
         )}
       >
         {active && (
-          <span className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-r-full bg-primary" />
+          <span className="bg-primary absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-r-full" />
         )}
         <Icon
           className={cn(
-            "h-5 w-5 shrink-0",
-            active
-              ? "text-primary"
-              : "text-muted-foreground group-hover:text-accent-foreground"
+            'h-5 w-5 shrink-0',
+            active ? 'text-primary' : 'text-muted-foreground group-hover:text-accent-foreground',
           )}
         />
         <span
           className={cn(
-            "truncate",
-            collapsed ? "w-0 opacity-0 overflow-hidden" : "w-auto opacity-100"
+            'truncate',
+            collapsed ? 'w-0 overflow-hidden opacity-0' : 'w-auto opacity-100',
           )}
         >
           {item.label}
@@ -195,19 +186,17 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
       {/* Logo */}
       <div
         className={cn(
-          "flex h-16 shrink-0 items-center gap-3 border-b px-4",
-          collapsed && "justify-center px-2"
+          'flex h-16 shrink-0 items-center gap-3 border-b px-4',
+          collapsed && 'justify-center px-2',
         )}
       >
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+        <div className="bg-primary text-primary-foreground flex h-9 w-9 shrink-0 items-center justify-center rounded-xl shadow-sm">
           <DollarSign className="h-5 w-5" />
         </div>
         <span
           className={cn(
-            "text-lg font-bold tracking-tight",
-            collapsed
-              ? "w-0 opacity-0 overflow-hidden"
-              : "w-auto opacity-100"
+            'text-lg font-bold tracking-tight',
+            collapsed ? 'w-0 overflow-hidden opacity-0' : 'w-auto opacity-100',
           )}
         >
           Splitwise
@@ -221,18 +210,14 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
             <div key={section.title}>
               <p
                 className={cn(
-                  "mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70",
-                  collapsed && "h-0 opacity-0 overflow-hidden mb-0"
+                  'text-muted-foreground/70 mb-2 px-3 text-xs font-semibold uppercase tracking-wider',
+                  collapsed && 'mb-0 h-0 overflow-hidden opacity-0',
                 )}
               >
                 {section.title}
               </p>
-              {collapsed && (
-                <Separator className="mb-2 opacity-50" />
-              )}
-              <div className="flex flex-col gap-1">
-                {section.items.map(renderNavItem)}
-              </div>
+              {collapsed && <Separator className="mb-2 opacity-50" />}
+              <div className="flex flex-col gap-1">{section.items.map(renderNavItem)}</div>
             </div>
           ))}
         </div>
@@ -241,61 +226,44 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
       {/* Bottom section */}
       <div className="mt-auto border-t">
         <div className="px-3 py-3">
-          <div className="flex flex-col gap-1">
-            {bottomNav.map(renderNavItem)}
-          </div>
+          <div className="flex flex-col gap-1">{bottomNav.map(renderNavItem)}</div>
         </div>
 
         <Separator />
 
         {/* User profile */}
-        <div className={cn("px-3 py-3", collapsed && "px-2")}>
+        <div className={cn('px-3 py-3', collapsed && 'px-2')}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-lg p-2 text-left",
-                  "hover:bg-accent",
-                  collapsed && "justify-center"
+                  'flex w-full items-center gap-3 rounded-lg p-2 text-left',
+                  'hover:bg-accent',
+                  collapsed && 'justify-center',
                 )}
               >
-                <Avatar className="h-8 w-8 shrink-0 ring-2 ring-primary/10">
-                  <AvatarImage
-                    src={user?.avatar ?? undefined}
-                    alt={user?.name}
-                  />
-                  <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
+                <Avatar className="ring-primary/10 h-8 w-8 shrink-0 ring-2">
+                  <AvatarImage src={user?.avatar ?? undefined} alt={user?.name} />
+                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
                     {getInitials(user?.name)}
                   </AvatarFallback>
                 </Avatar>
                 <div
                   className={cn(
-                    "min-w-0 flex-1",
-                    collapsed
-                      ? "w-0 opacity-0 overflow-hidden"
-                      : "w-auto opacity-100"
+                    'min-w-0 flex-1',
+                    collapsed ? 'w-0 overflow-hidden opacity-0' : 'w-auto opacity-100',
                   )}
                 >
-                  <p className="truncate text-sm font-medium">
-                    {user?.name ?? "User"}
-                  </p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {user?.email ?? ""}
-                  </p>
+                  <p className="truncate text-sm font-medium">{user?.name ?? 'User'}</p>
+                  <p className="text-muted-foreground truncate text-xs">{user?.email ?? ''}</p>
                 </div>
               </button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent
-              side={collapsed ? "right" : "top"}
-              align="start"
-              className="w-56"
-            >
+            <DropdownMenuContent side={collapsed ? 'right' : 'top'} align="start" className="w-56">
               <div className="px-2 py-1.5">
-                <p className="text-sm font-medium">{user?.name ?? "User"}</p>
-                <p className="text-xs text-muted-foreground">
-                  {user?.email ?? ""}
-                </p>
+                <p className="text-sm font-medium">{user?.name ?? 'User'}</p>
+                <p className="text-muted-foreground text-xs">{user?.email ?? ''}</p>
               </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
@@ -312,7 +280,7 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                className="cursor-pointer gap-2 text-destructive focus:text-destructive"
+                className="text-destructive focus:text-destructive cursor-pointer gap-2"
                 onClick={handleLogout}
               >
                 <LogOut className="h-4 w-4" />
@@ -331,15 +299,15 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
                 size="sm"
                 onClick={() => dispatch(toggleSidebar())}
                 className={cn(
-                  "w-full text-muted-foreground hover:text-foreground",
-                  collapsed ? "justify-center" : "justify-start"
+                  'text-muted-foreground hover:text-foreground w-full',
+                  collapsed ? 'justify-center' : 'justify-start',
                 )}
               >
                 {collapsed ? (
                   <ChevronsRight className="h-4 w-4" />
                 ) : (
                   <>
-                    <ChevronsLeft className="h-4 w-4 mr-2" />
+                    <ChevronsLeft className="mr-2 h-4 w-4" />
                     <span className="text-xs">Collapse</span>
                   </>
                 )}
@@ -348,9 +316,7 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
             {collapsed && (
               <TooltipContent side="right" className="font-medium">
                 Expand sidebar
-                <span className="ml-2 text-xs text-muted-foreground">
-                  Ctrl+[
-                </span>
+                <span className="text-muted-foreground ml-2 text-xs">Ctrl+[</span>
               </TooltipContent>
             )}
           </Tooltip>
@@ -364,10 +330,8 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
       {/* Mobile overlay */}
       <div
         className={cn(
-          "fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 lg:hidden",
-          mobileOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
+          'fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 lg:hidden',
+          mobileOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0',
         )}
         onClick={onMobileClose}
         aria-hidden="true"
@@ -376,10 +340,10 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
       {/* Mobile sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-72 border-r bg-sidebar-background text-sidebar-foreground",
-          "transition-transform duration-300 ease-in-out lg:hidden",
-          "shadow-2xl",
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
+          'bg-sidebar-background text-sidebar-foreground fixed inset-y-0 left-0 z-50 w-72 border-r',
+          'transition-transform duration-300 ease-in-out lg:hidden',
+          'shadow-2xl',
+          mobileOpen ? 'translate-x-0' : '-translate-x-full',
         )}
       >
         {sidebarContent}
@@ -388,9 +352,9 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          "hidden h-screen shrink-0 border-r bg-sidebar-background text-sidebar-foreground lg:block",
-          "transition-[width] duration-200 ease-in-out",
-          collapsed ? "w-[68px]" : "w-64"
+          'bg-sidebar-background text-sidebar-foreground hidden h-screen shrink-0 border-r lg:block',
+          'transition-[width] duration-200 ease-in-out',
+          collapsed ? 'w-[68px]' : 'w-64',
         )}
       >
         {sidebarContent}

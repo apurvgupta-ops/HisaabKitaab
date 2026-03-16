@@ -19,6 +19,7 @@ import categoryRoutes from './modules/categories/category.routes';
 import aiRoutes from './modules/ai/ai.routes';
 import uploadRoutes from './modules/uploads/upload.routes';
 import reportRoutes from './modules/reports/report.routes';
+import featureRoutes from './modules/features/feature.routes';
 
 const app = express();
 
@@ -82,6 +83,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/uploads', uploadRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/features', featureRoutes);
 
 app.use(errorHandler);
 
