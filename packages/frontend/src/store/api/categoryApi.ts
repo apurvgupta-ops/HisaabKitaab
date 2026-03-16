@@ -15,28 +15,22 @@ interface UpdateCategoryRequest extends Partial<CreateCategoryRequest> {
 export const categoryApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getCategories: builder.query<Category[], void>({
-      query: () => '/api/categories',
+      query: () => 'categories',
       providesTags: ['Category'],
     }),
 
-    createCategory: builder.mutation<
-      Category,
-      CreateCategoryRequest
-    >({
+    createCategory: builder.mutation<Category, CreateCategoryRequest>({
       query: (body) => ({
-        url: '/api/categories',
+        url: 'categories',
         method: 'POST',
         body,
       }),
       invalidatesTags: ['Category'],
     }),
 
-    updateCategory: builder.mutation<
-      Category,
-      UpdateCategoryRequest
-    >({
+    updateCategory: builder.mutation<Category, UpdateCategoryRequest>({
       query: ({ id, ...body }) => ({
-        url: `/api/categories/${id}`,
+        url: `categories/${id}`,
         method: 'PATCH',
         body,
       }),
@@ -45,7 +39,7 @@ export const categoryApi = apiSlice.injectEndpoints({
 
     deleteCategory: builder.mutation<void, string>({
       query: (id) => ({
-        url: `/api/categories/${id}`,
+        url: `categories/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Category'],

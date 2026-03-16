@@ -1,7 +1,4 @@
-import type {
-  Group,
-  GroupWithMembers,
-} from '@splitwise/shared';
+import type { Group, GroupWithMembers } from '@splitwise/shared';
 import { apiSlice } from './apiSlice';
 
 interface CreateGroupRequest {
@@ -41,18 +38,18 @@ interface RemoveMemberRequest {
 export const groupApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getGroups: builder.query<Group[], void>({
-      query: () => '/api/groups',
+      query: () => 'groups',
       providesTags: ['Group'],
     }),
 
     getGroup: builder.query<GroupWithMembers, string>({
-      query: (id) => `/api/groups/${id}`,
+      query: (id) => `groups/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Group', id }],
     }),
 
     createGroup: builder.mutation<Group, CreateGroupRequest>({
       query: (body) => ({
-        url: '/api/groups',
+        url: 'groups',
         method: 'POST',
         body,
       }),
@@ -61,7 +58,7 @@ export const groupApi = apiSlice.injectEndpoints({
 
     updateGroup: builder.mutation<Group, UpdateGroupRequest>({
       query: ({ id, ...body }) => ({
-        url: `/api/groups/${id}`,
+        url: `groups/${id}`,
         method: 'PUT',
         body,
       }),
@@ -70,7 +67,7 @@ export const groupApi = apiSlice.injectEndpoints({
 
     deleteGroup: builder.mutation<void, string>({
       query: (id) => ({
-        url: `/api/groups/${id}`,
+        url: `groups/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Group'],
@@ -78,25 +75,20 @@ export const groupApi = apiSlice.injectEndpoints({
 
     addMember: builder.mutation<GroupWithMembers, AddMemberRequest>({
       query: ({ groupId, ...body }) => ({
-        url: `/api/groups/${groupId}/members`,
+        url: `groups/${groupId}/members`,
         method: 'POST',
         body,
       }),
-      invalidatesTags: (_result, _error, { groupId }) => [
-        { type: 'Group', id: groupId },
-      ],
+      invalidatesTags: (_result, _error, { groupId }) => [{ type: 'Group', id: groupId }],
     }),
 
     removeMember: builder.mutation<void, RemoveMemberRequest>({
       query: ({ groupId, userId }) => ({
-        url: `/api/groups/${groupId}/members/${userId}`,
+        url: `groups/${groupId}/members/${userId}`,
         method: 'DELETE',
       }),
-      invalidatesTags: (_result, _error, { groupId }) => [
-        { type: 'Group', id: groupId },
-      ],
+      invalidatesTags: (_result, _error, { groupId }) => [{ type: 'Group', id: groupId }],
     }),
-
   }),
 });
 

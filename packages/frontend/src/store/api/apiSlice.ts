@@ -7,6 +7,7 @@ import {
 } from '@reduxjs/toolkit/query/react';
 import { Mutex } from 'async-mutex';
 import { clearCredentials, setCredentials, type UserData } from '../slices/authSlice';
+import { API_BASE } from '@/lib/api';
 
 interface AuthSliceState {
   token: string | null;
@@ -15,7 +16,7 @@ interface AuthSliceState {
 }
 
 const rawBaseQuery = fetchBaseQuery({
-  baseUrl: '',
+  baseUrl: API_BASE,
   prepareHeaders: (headers, { getState }) => {
     const { token } = (getState() as { auth: AuthSliceState }).auth;
     if (token) {
@@ -51,7 +52,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
         if (refreshToken) {
           const refreshResult = await rawBaseQuery(
             {
-              url: '/api/auth/refresh',
+              url: 'auth/refresh',
               method: 'POST',
               body: { refreshToken },
             },

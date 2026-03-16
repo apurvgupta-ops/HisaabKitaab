@@ -28,14 +28,14 @@ export const transactionApi = apiSlice.injectEndpoints({
       TransactionFilters | void
     >({
       query: (params) => ({
-        url: '/api/transactions',
+        url: 'transactions',
         params: params ?? undefined,
       }),
       providesTags: ['Transaction'],
     }),
 
     getTransaction: builder.query<Transaction, string>({
-      query: (id) => `/api/transactions/${id}`,
+      query: (id) => `transactions/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Transaction', id }],
     }),
 
@@ -44,30 +44,24 @@ export const transactionApi = apiSlice.injectEndpoints({
       { startDate?: string; endDate?: string } | void
     >({
       query: (params) => ({
-        url: '/api/transactions/summary',
+        url: 'transactions/summary',
         params: params ?? undefined,
       }),
       providesTags: ['Transaction'],
     }),
 
-    createTransaction: builder.mutation<
-      Transaction,
-      CreateTransactionRequest
-    >({
+    createTransaction: builder.mutation<Transaction, CreateTransactionRequest>({
       query: (body) => ({
-        url: '/api/transactions',
+        url: 'transactions',
         method: 'POST',
         body,
       }),
       invalidatesTags: ['Transaction', 'Budget'],
     }),
 
-    updateTransaction: builder.mutation<
-      Transaction,
-      UpdateTransactionRequest
-    >({
+    updateTransaction: builder.mutation<Transaction, UpdateTransactionRequest>({
       query: ({ id, ...body }) => ({
-        url: `/api/transactions/${id}`,
+        url: `transactions/${id}`,
         method: 'PATCH',
         body,
       }),
@@ -76,7 +70,7 @@ export const transactionApi = apiSlice.injectEndpoints({
 
     deleteTransaction: builder.mutation<void, string>({
       query: (id) => ({
-        url: `/api/transactions/${id}`,
+        url: `transactions/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Transaction', 'Budget'],

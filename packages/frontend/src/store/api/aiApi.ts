@@ -41,36 +41,26 @@ interface InsightsResponse {
 
 export const aiApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    categorizeExpense: builder.mutation<
-      CategorizeResponse,
-      CategorizeRequest
-    >({
+    categorizeExpense: builder.mutation<CategorizeResponse, CategorizeRequest>({
       query: (body) => ({
-        url: '/api/ai/categorize',
+        url: 'ai/categorize',
         method: 'POST',
         body,
       }),
     }),
 
-    parseExpense: builder.mutation<
-      ParseExpenseResponse,
-      ParseExpenseRequest
-    >({
+    parseExpense: builder.mutation<ParseExpenseResponse, ParseExpenseRequest>({
       query: (body) => ({
-        url: '/api/ai/parse',
+        url: 'ai/parse',
         method: 'POST',
         body,
       }),
     }),
 
     getInsights: builder.query<InsightsResponse, void>({
-      query: () => '/api/ai/insights',
+      query: () => 'ai/insights',
     }),
   }),
 });
 
-export const {
-  useCategorizeExpenseMutation,
-  useParseExpenseMutation,
-  useGetInsightsQuery,
-} = aiApi;
+export const { useCategorizeExpenseMutation, useParseExpenseMutation, useGetInsightsQuery } = aiApi;

@@ -1,8 +1,4 @@
-import type {
-  BudgetWithProgress,
-  BudgetAlert,
-  BudgetPeriod,
-} from '@splitwise/shared';
+import type { BudgetWithProgress, BudgetAlert, BudgetPeriod } from '@splitwise/shared';
 import { apiSlice } from './apiSlice';
 
 interface CreateBudgetRequest {
@@ -21,38 +17,32 @@ interface UpdateBudgetRequest extends Partial<CreateBudgetRequest> {
 export const budgetApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getBudgets: builder.query<BudgetWithProgress[], void>({
-      query: () => '/api/budgets',
+      query: () => 'budgets',
       providesTags: ['Budget'],
     }),
 
     getBudget: builder.query<BudgetWithProgress, string>({
-      query: (id) => `/api/budgets/${id}`,
+      query: (id) => `budgets/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Budget', id }],
     }),
 
     getBudgetAlerts: builder.query<BudgetAlert[], void>({
-      query: () => '/api/budgets/alerts',
+      query: () => 'budgets/alerts',
       providesTags: ['Budget'],
     }),
 
-    createBudget: builder.mutation<
-      BudgetWithProgress,
-      CreateBudgetRequest
-    >({
+    createBudget: builder.mutation<BudgetWithProgress, CreateBudgetRequest>({
       query: (body) => ({
-        url: '/api/budgets',
+        url: 'budgets',
         method: 'POST',
         body,
       }),
       invalidatesTags: ['Budget'],
     }),
 
-    updateBudget: builder.mutation<
-      BudgetWithProgress,
-      UpdateBudgetRequest
-    >({
+    updateBudget: builder.mutation<BudgetWithProgress, UpdateBudgetRequest>({
       query: ({ id, ...body }) => ({
-        url: `/api/budgets/${id}`,
+        url: `budgets/${id}`,
         method: 'PATCH',
         body,
       }),
@@ -61,7 +51,7 @@ export const budgetApi = apiSlice.injectEndpoints({
 
     deleteBudget: builder.mutation<void, string>({
       query: (id) => ({
-        url: `/api/budgets/${id}`,
+        url: `budgets/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Budget'],

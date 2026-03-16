@@ -1,8 +1,4 @@
-import type {
-  ExpenseWithDetails,
-  ExpenseFilters,
-  PaginationMeta,
-} from '@splitwise/shared';
+import type { ExpenseWithDetails, ExpenseFilters, PaginationMeta } from '@splitwise/shared';
 import { apiSlice } from './apiSlice';
 
 export interface BalanceEntry {
@@ -41,35 +37,29 @@ export const expenseApi = apiSlice.injectEndpoints({
       { groupId: string } & ExpenseFilters
     >({
       query: ({ groupId, ...params }) => ({
-        url: `/api/expenses/group/${groupId}`,
+        url: `expenses/group/${groupId}`,
         params,
       }),
       providesTags: ['Expense'],
     }),
 
     getExpense: builder.query<ExpenseWithDetails, string>({
-      query: (id) => `/api/expenses/${id}`,
+      query: (id) => `expenses/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Expense', id }],
     }),
 
-    createExpense: builder.mutation<
-      ExpenseWithDetails,
-      CreateExpenseRequest
-    >({
+    createExpense: builder.mutation<ExpenseWithDetails, CreateExpenseRequest>({
       query: (body) => ({
-        url: '/api/expenses',
+        url: 'expenses',
         method: 'POST',
         body,
       }),
       invalidatesTags: ['Expense', 'Settlement'],
     }),
 
-    updateExpense: builder.mutation<
-      ExpenseWithDetails,
-      UpdateExpenseRequest
-    >({
+    updateExpense: builder.mutation<ExpenseWithDetails, UpdateExpenseRequest>({
       query: ({ id, ...body }) => ({
-        url: `/api/expenses/${id}`,
+        url: `expenses/${id}`,
         method: 'PATCH',
         body,
       }),
@@ -78,14 +68,14 @@ export const expenseApi = apiSlice.injectEndpoints({
 
     deleteExpense: builder.mutation<void, string>({
       query: (id) => ({
-        url: `/api/expenses/${id}`,
+        url: `expenses/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Expense', 'Settlement'],
     }),
 
     getGroupBalances: builder.query<BalanceEntry[], string>({
-      query: (groupId) => `/api/expenses/group/${groupId}/balances`,
+      query: (groupId) => `expenses/group/${groupId}/balances`,
       providesTags: (_result, _error, groupId) => [
         { type: 'Expense', id: `balances-${groupId}` },
         'Settlement',

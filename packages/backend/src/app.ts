@@ -4,32 +4,40 @@ import helmet from 'helmet';
 import compression from 'compression';
 import { env } from './config';
 import { errorHandler, apiLimiter, requestTracer } from './middleware';
-import { logger } from './shared/logger';
 import { prisma } from './shared/database/prisma';
 import { redis } from './shared/cache/redis';
 
-import authRoutes from './modules/auth/auth.routes';
-import userRoutes from './modules/users/user.routes';
-import groupRoutes from './modules/groups/group.routes';
-import expenseRoutes from './modules/expenses/expense.routes';
-import settlementRoutes from './modules/settlements/settlement.routes';
-import transactionRoutes from './modules/transactions/transaction.routes';
-import budgetRoutes from './modules/budgets/budget.routes';
-import categoryRoutes from './modules/categories/category.routes';
-import aiRoutes from './modules/ai/ai.routes';
-import uploadRoutes from './modules/uploads/upload.routes';
-import reportRoutes from './modules/reports/report.routes';
-import featureRoutes from './modules/features/feature.routes';
+import v1Router from './routes/v1';
+import { handleStripeWebhook } from './modules/payments/stripe.webhook';
 
 const app = express();
 
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'", env.frontendUrl],
+        fontSrc: ["'self'"],
+        frameAncestors: ["'none'"],
+        formAction: ["'self'"],
+        baseUri: ["'self'"],
+      },
+    },
+    xFrameOptions: { action: 'deny' },
+    hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  }),
+);
 app.use(
   cors({
     origin: env.frontendUrl,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'X-Idempotency-Key'],
   }),
 );
 app.use(compression());
@@ -39,6 +47,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(requestTracer);
 
 app.use('/api', apiLimiter);
+
+// Stripe webhook - MUST be before express.json to receive raw body for signature verification
+app.post('/api/v1/webhooks/stripe', express.raw({ type: 'application/json' }), (req, res, next) => {
+  handleStripeWebhook(req, res).catch(next);
+});
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -72,18 +85,7 @@ app.get('/health/ready', async (_req, res) => {
   });
 });
 
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/groups', groupRoutes);
-app.use('/api/expenses', expenseRoutes);
-app.use('/api/settlements', settlementRoutes);
-app.use('/api/transactions', transactionRoutes);
-app.use('/api/budgets', budgetRoutes);
-app.use('/api/categories', categoryRoutes);
-app.use('/api/ai', aiRoutes);
-app.use('/api/uploads', uploadRoutes);
-app.use('/api/reports', reportRoutes);
-app.use('/api/features', featureRoutes);
+app.use('/api/v1', v1Router);
 
 app.use(errorHandler);
 

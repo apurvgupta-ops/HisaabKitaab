@@ -4,7 +4,7 @@ import { apiSlice } from './apiSlice';
 export const featureApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getFeatures: builder.query<FeatureFlags, void>({
-      query: () => '/api/features',
+      query: () => 'features',
       providesTags: ['FeatureFlags'],
     }),
   }),

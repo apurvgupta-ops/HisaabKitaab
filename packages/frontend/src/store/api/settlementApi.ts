@@ -24,38 +24,32 @@ interface UpdateSettlementStatusRequest {
 export const settlementApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getGroupSettlements: builder.query<SettlementWithUsers[], string>({
-      query: (groupId) => `/api/settlements/group/${groupId}`,
+      query: (groupId) => `settlements/group/${groupId}`,
       providesTags: ['Settlement'],
     }),
 
     getSimplifiedDebts: builder.query<DebtEdge[], string>({
-      query: (groupId) => `/api/settlements/group/${groupId}/simplified`,
+      query: (groupId) => `settlements/group/${groupId}/simplified`,
       providesTags: ['Settlement'],
     }),
 
     getUserSettlements: builder.query<SettlementWithUsers[], void>({
-      query: () => '/api/settlements/me',
+      query: () => 'settlements/me',
       providesTags: ['Settlement'],
     }),
 
-    createSettlement: builder.mutation<
-      SettlementWithUsers,
-      CreateSettlementRequest
-    >({
+    createSettlement: builder.mutation<SettlementWithUsers, CreateSettlementRequest>({
       query: (body) => ({
-        url: '/api/settlements',
+        url: 'settlements',
         method: 'POST',
         body,
       }),
       invalidatesTags: ['Settlement', 'Expense'],
     }),
 
-    updateSettlementStatus: builder.mutation<
-      SettlementWithUsers,
-      UpdateSettlementStatusRequest
-    >({
+    updateSettlementStatus: builder.mutation<SettlementWithUsers, UpdateSettlementStatusRequest>({
       query: ({ id, ...body }) => ({
-        url: `/api/settlements/${id}/status`,
+        url: `settlements/${id}/status`,
         method: 'PATCH',
         body,
       }),
