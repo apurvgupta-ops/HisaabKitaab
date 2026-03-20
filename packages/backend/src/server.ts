@@ -32,7 +32,9 @@ const start = async () => {
     await prisma.$connect();
     logger.info('Database connected');
 
-    await redis.connect();
+    if (redis.status === 'wait') {
+      await redis.connect();
+    }
     logger.info('Redis connected');
 
     await setupGraphQL(app);
