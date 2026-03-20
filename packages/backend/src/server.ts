@@ -6,6 +6,7 @@ import { prisma } from './shared/database/prisma';
 import { redis } from './shared/cache/redis';
 import { initSocketServer } from './shared/socket/socketServer';
 import { setupGraphQL } from './graphql';
+import { registerWorkers, scheduleRecurringJobs } from './shared/queue/workers';
 
 const server = http.createServer(app);
 
@@ -14,13 +15,17 @@ initSocketServer(server);
 const start = async () => {
   try {
     await prisma.$connect();
-    logger.info('Prisma updated');
     logger.info('Database connected');
 
-    await redis.connect();
+    if (redis.status === 'wait') {
+      await redis.connect();
+    }
     logger.info('Redis connected');
 
     await setupGraphQL(app);
+
+    registerWorkers();
+    await scheduleRecurringJobs();
 
     server.listen(env.port, () => {
       logger.info(`Server running on port ${env.port} [${env.nodeEnv}]`);

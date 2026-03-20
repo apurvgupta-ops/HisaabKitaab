@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
+import type { Multer } from 'multer';
 import { uploadToS3 } from '../../shared/services/s3';
-import { extractTextFromImage, parseReceiptText } from '../../shared/services/ocr';
+import { parseReceiptWithAI } from '../../shared/services/ocr';
 import { AppError } from '../../middleware/errorHandler';
 
 /**
@@ -9,7 +10,7 @@ import { AppError } from '../../middleware/errorHandler';
 export const handleUpload = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   try {
     const file = req.file;
@@ -17,12 +18,7 @@ export const handleUpload = async (
       throw AppError.badRequest('No file uploaded');
     }
 
-    const { key, url } = await uploadToS3(
-      file.buffer,
-      file.originalname,
-      file.mimetype,
-      'uploads'
-    );
+    const { key, url } = await uploadToS3(file.buffer, file.originalname, file.mimetype, 'uploads');
 
     res.status(201).json({
       success: true,
@@ -45,10 +41,10 @@ export const handleUpload = async (
 export const handleMultipleUpload = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   try {
-    const files = req.files as Express.Multer.File[] | undefined;
+    const files = req.files as Multer.File[] | undefined;
     if (!files || files.length === 0) {
       throw AppError.badRequest('No files uploaded');
     }
@@ -59,7 +55,7 @@ export const handleMultipleUpload = async (
           file.buffer,
           file.originalname,
           file.mimetype,
-          'uploads'
+          'uploads',
         );
         return {
           key,
@@ -68,7 +64,7 @@ export const handleMultipleUpload = async (
           mimeType: file.mimetype,
           size: file.size,
         };
-      })
+      }),
     );
 
     res.status(201).json({
@@ -86,7 +82,7 @@ export const handleMultipleUpload = async (
 export const handleReceiptUpload = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   try {
     const file = req.file;
@@ -98,11 +94,10 @@ export const handleReceiptUpload = async (
       file.buffer,
       file.originalname,
       file.mimetype,
-      'receipts'
+      'receipts',
     );
 
-    const text = await extractTextFromImage(file.buffer, file.mimetype);
-    const parsed = parseReceiptText(text);
+    const parsed = await parseReceiptWithAI(file.buffer, file.mimetype);
 
     res.status(201).json({
       success: true,

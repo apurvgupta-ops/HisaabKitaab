@@ -227,9 +227,7 @@ Text: "${text}"`,
       .map(([name, amount]) => ({
         name,
         amount: Math.round(amount * 100) / 100,
-        percentage: totalExpenses > 0
-          ? Math.round((amount / totalExpenses) * 10000) / 100
-          : 0,
+        percentage: totalExpenses > 0 ? Math.round((amount / totalExpenses) * 10000) / 100 : 0,
       }));
 
     const summary = {
@@ -237,9 +235,10 @@ Text: "${text}"`,
       totalIncome: Math.round(totalIncome * 100) / 100,
       totalExpenses: Math.round(totalExpenses * 100) / 100,
       netBalance: Math.round((totalIncome - totalExpenses) * 100) / 100,
-      savingsRate: totalIncome > 0
-        ? Math.round(((totalIncome - totalExpenses) / totalIncome) * 10000) / 100
-        : 0,
+      savingsRate:
+        totalIncome > 0
+          ? Math.round(((totalIncome - totalExpenses) / totalIncome) * 10000) / 100
+          : 0,
       transactionCount: transactions.length,
       topCategories,
     };
@@ -294,4 +293,150 @@ Summary:
       };
     }
   },
+
+  /**
+   * AI chat assistant that can answer questions about expenses, balances,
+   * and provide financial guidance using the user's data as context.
+   */
+  async chat(userId: string, message: string, history: { role: string; content: string }[]) {
+    const client = getClient();
+
+    const recentTransactions = await prisma.transaction.findMany({
+      where: { userId },
+      include: { category: { select: { name: true } } },
+      orderBy: { date: 'desc' },
+      take: 20,
+    });
+
+    const groups = await prisma.groupMember.findMany({
+      where: { userId },
+      include: {
+        group: {
+          select: { id: true, name: true },
+        },
+      },
+    });
+
+    const pendingSettlements = await prisma.settlement.findMany({
+      where: { OR: [{ fromUserId: userId }, { toUserId: userId }], status: 'pending' },
+      include: {
+        fromUser: { select: { name: true } },
+        toUser: { select: { name: true } },
+        group: { select: { name: true } },
+      },
+      take: 10,
+    });
+
+    const contextSummary = buildChatContext(recentTransactions, groups, pendingSettlements, userId);
+
+    if (!client) {
+      return generateFallbackResponse(message, contextSummary);
+    }
+
+    try {
+      const messages: { role: 'user' | 'assistant'; content: string }[] = [
+        ...history.slice(-10).map((h) => ({
+          role: h.role as 'user' | 'assistant',
+          content: h.content,
+        })),
+        { role: 'user' as const, content: message },
+      ];
+
+      const response = await client.messages.create({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 512,
+        system: `You are a helpful financial assistant for a Splitwise-like expense splitting app. You help users understand their expenses, debts, and finances. Be concise, friendly, and actionable. Use the following user context:
+
+${contextSummary}
+
+If the user asks to add an expense or perform an action, explain how to do it in the app rather than doing it directly. Format currency amounts properly. Keep responses under 200 words.`,
+        messages,
+      });
+
+      const reply = response.content[0]?.type === 'text' ? response.content[0].text : '';
+      return {
+        reply,
+        intent: detectIntent(message),
+      };
+    } catch (err) {
+      logger.error({ err }, 'AI chat failed');
+      return generateFallbackResponse(message, contextSummary);
+    }
+  },
 };
+
+function buildChatContext(
+  transactions: {
+    amount: unknown;
+    type: string;
+    description: string;
+    category: { name: string } | null;
+    date: Date;
+  }[],
+  groups: { group: { id: string; name: string } }[],
+  settlements: {
+    amount: unknown;
+    fromUser: { name: string };
+    toUser: { name: string };
+    group: { name: string };
+  }[],
+  _userId: string,
+): string {
+  const totalExpenses = transactions
+    .filter((t) => t.type === 'expense')
+    .reduce((s, t) => s + Number(t.amount), 0);
+
+  const totalIncome = transactions
+    .filter((t) => t.type === 'income')
+    .reduce((s, t) => s + Number(t.amount), 0);
+
+  const groupNames = groups.map((g) => g.group.name).join(', ') || 'None';
+
+  const pendingDebts = settlements
+    .map(
+      (s) =>
+        `${s.fromUser.name} owes ${s.toUser.name} $${Number(s.amount).toFixed(2)} (${s.group.name})`,
+    )
+    .join('; ');
+
+  return `Recent spending: $${totalExpenses.toFixed(2)} | Recent income: $${totalIncome.toFixed(2)} | Groups: ${groupNames} | Pending settlements: ${pendingDebts || 'None'} | Recent transactions: ${transactions.length}`;
+}
+
+function detectIntent(message: string): string | null {
+  const lower = message.toLowerCase();
+  if (/how much.*owe|what.*owe|balance/i.test(lower)) return 'check_balance';
+  if (/add.*expense|create.*expense|log.*expense/i.test(lower)) return 'add_expense';
+  if (/settle|pay.*back|send.*money/i.test(lower)) return 'settle_up';
+  if (/spend|spending|budget/i.test(lower)) return 'spending_summary';
+  if (/group|split/i.test(lower)) return 'group_info';
+  return null;
+}
+
+function generateFallbackResponse(
+  message: string,
+  context: string,
+): { reply: string; intent: string | null } {
+  const intent = detectIntent(message);
+  let reply: string;
+
+  switch (intent) {
+    case 'check_balance':
+      reply = `Here's a quick look at your finances: ${context}. Head to your group page to see detailed balances.`;
+      break;
+    case 'add_expense':
+      reply =
+        'To add an expense, go to a group page and click "Add Expense". You can also use the Smart Categorize page to let AI help categorize it.';
+      break;
+    case 'settle_up':
+      reply =
+        'To settle up, go to your group page, click "Settle Up", and choose a payment method. You can also send a nudge reminder to friends who owe you.';
+      break;
+    case 'spending_summary':
+      reply = `Your recent financial summary: ${context}. Visit the Insights page for a detailed AI-powered breakdown.`;
+      break;
+    default:
+      reply = `I can help you with expenses, balances, settlements, and budgets. ${context ? `Here's your current summary: ${context}` : 'Ask me anything about your finances!'}`;
+  }
+
+  return { reply, intent };
+}

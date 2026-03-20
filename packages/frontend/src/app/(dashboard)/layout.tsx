@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAppSelector } from '@/store/hooks';
 import { Sidebar } from '@/components/layout/sidebar';
 import { Header } from '@/components/layout/header';
+import { ChatWidget } from '@/components/ai/chat-widget';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -28,9 +29,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (!hydrated) {
     return (
-      <div className="bg-background flex h-screen items-center justify-center">
+      <div className="flex h-screen items-center justify-center bg-background">
         <div className="relative h-10 w-10">
-          <div className="border-primary/20 border-t-primary absolute inset-0 animate-spin rounded-full border-4" />
+          <div className="absolute inset-0 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
         </div>
       </div>
     );
@@ -41,7 +42,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="bg-background flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-background">
       <Sidebar mobileOpen={mobileMenuOpen} onMobileClose={handleMobileClose} />
 
       <div className="flex flex-1 flex-col overflow-hidden">
@@ -51,6 +52,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">{children}</div>
         </main>
       </div>
+
+      <ChatWidget />
     </div>
   );
 }

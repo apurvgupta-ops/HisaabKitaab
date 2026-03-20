@@ -1,8 +1,21 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["tsconfig.base.json", ".env"],
+  "globalEnv": ["NODE_ENV", "CI"],
+  "globalPassThroughEnv": [
+    "DATABASE_URL",
+    "REDIS_URL",
+    "JWT_SECRET",
+    "JWT_REFRESH_SECRET",
+    "STRIPE_SECRET_KEY",
+    "STRIPE_WEBHOOK_SECRET",
+    "ANTHROPIC_API_KEY",
+    "SENTRY_DSN"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
+      "inputs": ["src/**", "tsconfig.json", "package.json"],
       "outputs": ["dist/**", ".next/**"],
       "env": ["NODE_ENV"]
     },
@@ -13,7 +26,8 @@
     },
     "lint": {
       "dependsOn": ["^build"],
-      "cache": true
+      "inputs": ["src/**", "eslint.config.*", ".eslintrc.*", "tsconfig.json"],
+      "outputs": []
     },
     "lint:fix": {
       "dependsOn": ["^build"],
@@ -21,11 +35,14 @@
     },
     "typecheck": {
       "dependsOn": ["^build"],
-      "cache": true
+      "inputs": ["src/**", "tsconfig.json", "package.json"],
+      "outputs": []
     },
     "test": {
-      "dependsOn": ["build"],
-      "cache": true
+      "dependsOn": ["^build"],
+      "inputs": ["src/**", "tests/**", "jest.config.*", "tsconfig.json"],
+      "outputs": ["coverage/**"],
+      "env": ["NODE_ENV"]
     },
     "clean": {
       "cache": false

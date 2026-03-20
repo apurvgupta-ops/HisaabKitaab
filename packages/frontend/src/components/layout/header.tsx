@@ -1,29 +1,30 @@
-"use client";
+'use client';
 
-import { Bell, Menu, DollarSign } from "lucide-react";
-import Link from "next/link";
+import { Bell, Menu, DollarSign } from 'lucide-react';
+import Link from 'next/link';
 
-import { useAppSelector } from "@/store/hooks";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAppSelector } from '@/store/hooks';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ThemeToggle } from '@/components/theme-toggle';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 
 interface HeaderProps {
   onMenuToggle: () => void;
 }
 
 const getInitials = (name: string | undefined): string => {
-  if (!name) return "U";
+  if (!name) return 'U';
   const parts = name.trim().split(/\s+/);
   return parts
     .slice(0, 2)
     .map((p) => p[0]?.toUpperCase())
-    .join("");
+    .join('');
 };
 
 export const Header = ({ onMenuToggle }: HeaderProps) => {
@@ -32,12 +33,7 @@ export const Header = ({ onMenuToggle }: HeaderProps) => {
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 lg:hidden">
       <div className="flex items-center gap-3">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onMenuToggle}
-          className="shrink-0"
-        >
+        <Button variant="ghost" size="icon" onClick={onMenuToggle} className="shrink-0">
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle menu</span>
         </Button>
@@ -51,6 +47,7 @@ export const Header = ({ onMenuToggle }: HeaderProps) => {
       </div>
 
       <div className="flex items-center gap-1">
+        <ThemeToggle />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative">
@@ -65,9 +62,7 @@ export const Header = ({ onMenuToggle }: HeaderProps) => {
           <DropdownMenuContent align="end" className="w-72">
             <div className="px-3 py-2">
               <p className="text-sm font-semibold">Notifications</p>
-              <p className="text-xs text-muted-foreground">
-                You have no new notifications
-              </p>
+              <p className="text-xs text-muted-foreground">You have no new notifications</p>
             </div>
             <DropdownMenuItem className="cursor-pointer text-center text-xs text-primary">
               View all notifications

@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "build": "prisma generate && tsc",
     "start": "node dist/server.js",
-    "lint": "eslint src/ --ext .ts",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "typecheck": "tsc --noEmit",
     "test": "jest --passWithNoTests",
     "clean": "rimraf dist",
     "db:migrate": "prisma migrate dev",

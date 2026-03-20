@@ -11,6 +11,8 @@ import aiRoutes from '../modules/ai/ai.routes';
 import uploadRoutes from '../modules/uploads/upload.routes';
 import reportRoutes from '../modules/reports/report.routes';
 import featureRoutes from '../modules/features/feature.routes';
+import reminderRoutes from '../modules/reminders/reminder.routes';
+import recurringRoutes from '../modules/recurring/recurring.routes';
 
 /**
  * API v1 router. All REST endpoints are versioned under /api/v1.
@@ -30,5 +32,7 @@ v1Router.use('/ai', aiRoutes);
 v1Router.use('/uploads', uploadRoutes);
 v1Router.use('/reports', reportRoutes);
 v1Router.use('/features', featureRoutes);
+v1Router.use('/reminders', reminderRoutes);
+v1Router.use('/recurring', recurringRoutes);
 
 export default v1Router;

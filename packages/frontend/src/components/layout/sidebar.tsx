@@ -12,6 +12,7 @@ import {
   BarChart3,
   Sparkles,
   Brain,
+  ScanLine,
   Settings,
   DollarSign,
   ChevronsLeft,
@@ -37,6 +38,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 interface NavItem {
   label: string;
@@ -71,6 +73,7 @@ const navSections: NavSection[] = [
     items: [
       { label: 'Smart Categorize', href: '/categorize', icon: Sparkles },
       { label: 'Insights', href: '/insights', icon: Brain },
+      { label: 'Receipt Scanner', href: '/receipt-scanner', icon: ScanLine },
     ],
   },
 ];
@@ -148,7 +151,7 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
         )}
       >
         {active && (
-          <span className="bg-primary absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-r-full" />
+          <span className="absolute left-0 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-r-full bg-primary" />
         )}
         <Icon
           className={cn(
@@ -190,7 +193,7 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
           collapsed && 'justify-center px-2',
         )}
       >
-        <div className="bg-primary text-primary-foreground flex h-9 w-9 shrink-0 items-center justify-center rounded-xl shadow-sm">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
           <DollarSign className="h-5 w-5" />
         </div>
         <span
@@ -210,7 +213,7 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
             <div key={section.title}>
               <p
                 className={cn(
-                  'text-muted-foreground/70 mb-2 px-3 text-xs font-semibold uppercase tracking-wider',
+                  'mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70',
                   collapsed && 'mb-0 h-0 overflow-hidden opacity-0',
                 )}
               >
@@ -225,8 +228,9 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
 
       {/* Bottom section */}
       <div className="mt-auto border-t">
-        <div className="px-3 py-3">
-          <div className="flex flex-col gap-1">{bottomNav.map(renderNavItem)}</div>
+        <div className="flex items-center justify-between px-3 py-3">
+          <div className="flex flex-1 flex-col gap-1">{bottomNav.map(renderNavItem)}</div>
+          {!collapsed && <ThemeToggle />}
         </div>
 
         <Separator />
@@ -242,9 +246,9 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
                   collapsed && 'justify-center',
                 )}
               >
-                <Avatar className="ring-primary/10 h-8 w-8 shrink-0 ring-2">
+                <Avatar className="h-8 w-8 shrink-0 ring-2 ring-primary/10">
                   <AvatarImage src={user?.avatar ?? undefined} alt={user?.name} />
-                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+                  <AvatarFallback className="bg-primary/10 text-xs font-semibold text-primary">
                     {getInitials(user?.name)}
                   </AvatarFallback>
                 </Avatar>
@@ -255,7 +259,7 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
                   )}
                 >
                   <p className="truncate text-sm font-medium">{user?.name ?? 'User'}</p>
-                  <p className="text-muted-foreground truncate text-xs">{user?.email ?? ''}</p>
+                  <p className="truncate text-xs text-muted-foreground">{user?.email ?? ''}</p>
                 </div>
               </button>
             </DropdownMenuTrigger>
@@ -263,7 +267,7 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
             <DropdownMenuContent side={collapsed ? 'right' : 'top'} align="start" className="w-56">
               <div className="px-2 py-1.5">
                 <p className="text-sm font-medium">{user?.name ?? 'User'}</p>
-                <p className="text-muted-foreground text-xs">{user?.email ?? ''}</p>
+                <p className="text-xs text-muted-foreground">{user?.email ?? ''}</p>
               </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
@@ -280,7 +284,7 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                className="text-destructive focus:text-destructive cursor-pointer gap-2"
+                className="cursor-pointer gap-2 text-destructive focus:text-destructive"
                 onClick={handleLogout}
               >
                 <LogOut className="h-4 w-4" />
@@ -299,7 +303,7 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
                 size="sm"
                 onClick={() => dispatch(toggleSidebar())}
                 className={cn(
-                  'text-muted-foreground hover:text-foreground w-full',
+                  'w-full text-muted-foreground hover:text-foreground',
                   collapsed ? 'justify-center' : 'justify-start',
                 )}
               >
@@ -316,7 +320,7 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
             {collapsed && (
               <TooltipContent side="right" className="font-medium">
                 Expand sidebar
-                <span className="text-muted-foreground ml-2 text-xs">Ctrl+[</span>
+                <span className="ml-2 text-xs text-muted-foreground">Ctrl+[</span>
               </TooltipContent>
             )}
           </Tooltip>
@@ -340,7 +344,7 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
       {/* Mobile sidebar */}
       <aside
         className={cn(
-          'bg-sidebar-background text-sidebar-foreground fixed inset-y-0 left-0 z-50 w-72 border-r',
+          'bg-sidebar-background fixed inset-y-0 left-0 z-50 w-72 border-r text-sidebar-foreground',
           'transition-transform duration-300 ease-in-out lg:hidden',
           'shadow-2xl',
           mobileOpen ? 'translate-x-0' : '-translate-x-full',
@@ -352,7 +356,7 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
       {/* Desktop sidebar */}
       <aside
         className={cn(
-          'bg-sidebar-background text-sidebar-foreground hidden h-screen shrink-0 border-r lg:block',
+          'bg-sidebar-background hidden h-screen shrink-0 border-r text-sidebar-foreground lg:block',
           'transition-[width] duration-200 ease-in-out',
           collapsed ? 'w-[68px]' : 'w-64',
         )}
