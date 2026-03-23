@@ -35,11 +35,7 @@ interface AuthResult {
  * refresh token in Redis for rotation-based invalidation.
  */
 const generateTokens = async (userId: string, email: string): Promise<TokenPair> => {
-  const accessToken = jwt.sign(
-    { sub: userId, email },
-    env.jwt.secret,
-    { expiresIn: 900 },
-  );
+  const accessToken = jwt.sign({ sub: userId, email }, env.jwt.secret, { expiresIn: 900 });
 
   const refreshToken = uuidv4();
   const redisKey = `${REFRESH_TOKEN_PREFIX}${userId}:${refreshToken}`;
@@ -111,6 +107,7 @@ export const authService = {
       },
     });
 
+    console.log({ user });
     if (!user || !user.passwordHash) {
       throw AppError.unauthorized('Invalid email or password');
     }

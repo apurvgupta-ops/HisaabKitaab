@@ -1,5 +1,4 @@
 import type { Request, Response, NextFunction } from 'express';
-import type { Multer } from 'multer';
 import { uploadToS3 } from '../../shared/services/s3';
 import { parseReceiptWithAI } from '../../shared/services/ocr';
 import { AppError } from '../../middleware/errorHandler';
@@ -44,7 +43,7 @@ export const handleMultipleUpload = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const files = req.files as Multer.File[] | undefined;
+    const files = req.files as Express.Multer.File[] | undefined;
     if (!files || files.length === 0) {
       throw AppError.badRequest('No files uploaded');
     }

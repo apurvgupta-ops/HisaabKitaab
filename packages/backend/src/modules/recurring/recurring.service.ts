@@ -38,7 +38,7 @@ export const recurringService = {
     const expenses = await prisma.expense.findMany({
       where: {
         isRecurring: true,
-        createdById: userId,
+        createdBy: userId,
       },
       include: {
         group: { select: { id: true, name: true } },
@@ -104,9 +104,9 @@ export const recurringService = {
             categoryId: expense.categoryId,
             tags: expense.tags as string[],
             date: nextDue,
-            createdById: expense.createdById,
+            createdBy: expense.createdBy,
             isRecurring: true,
-            recurringConfig: expense.recurringConfig,
+            recurringConfig: expense.recurringConfig ?? undefined,
             payers: {
               create: expense.payers.map((p) => ({
                 userId: p.userId,

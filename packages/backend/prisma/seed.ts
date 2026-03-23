@@ -8,16 +8,21 @@ const seed = async () => {
   console.log('Seeding database...');
 
   for (const cat of SYSTEM_CATEGORIES) {
-    await prisma.category.upsert({
-      where: { id: cat.name },
-      update: {},
-      create: {
-        name: cat.name,
-        icon: cat.icon,
-        color: cat.color,
-        isSystem: true,
-      },
+    const existingCategory = await prisma.category.findFirst({
+      where: { name: cat.name, isSystem: true },
+      select: { id: true },
     });
+
+    if (!existingCategory) {
+      await prisma.category.create({
+        data: {
+          name: cat.name,
+          icon: cat.icon,
+          color: cat.color,
+          isSystem: true,
+        },
+      });
+    }
   }
   console.log(`Seeded ${SYSTEM_CATEGORIES.length} system categories`);
 
