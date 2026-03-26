@@ -79,6 +79,46 @@ const seed = async () => {
 
   console.log('Seeded demo users:', demoUser.email, alice.email, bob.email);
 
+  const featureFlags = [
+    {
+      key: 'ai_expense_copilot',
+      enabled: true,
+      rolloutPercent: 100,
+      metadata: {
+        owner: 'product',
+        description: 'Natural-language expense draft generation',
+      },
+    },
+    {
+      key: 'android_sms_ingestion',
+      enabled: true,
+      rolloutPercent: 100,
+      metadata: {
+        owner: 'mobile',
+        description: 'Android SMS to draft-expense automation pipeline',
+      },
+    },
+  ];
+
+  for (const flag of featureFlags) {
+    await prisma.featureFlag.upsert({
+      where: { key: flag.key },
+      update: {
+        enabled: flag.enabled,
+        rolloutPercent: flag.rolloutPercent,
+        metadata: flag.metadata,
+      },
+      create: {
+        key: flag.key,
+        enabled: flag.enabled,
+        rolloutPercent: flag.rolloutPercent,
+        targetUserIds: [],
+        metadata: flag.metadata,
+      },
+    });
+  }
+  console.log(`Seeded ${featureFlags.length} feature flags`);
+
   const group = await prisma.group.create({
     data: {
       name: 'Weekend Trip',

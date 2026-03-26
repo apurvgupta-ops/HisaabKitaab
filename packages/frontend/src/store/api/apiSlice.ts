@@ -77,6 +77,7 @@ export const apiSlice = createApi({
     'Budget',
     'Category',
     'Household',
+    'FeatureFlags',
   ],
   endpoints: () => ({}),
 });

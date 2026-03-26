@@ -15,6 +15,7 @@ import {
   ScanLine,
   Settings,
   DollarSign,
+  Smartphone,
   ChevronsLeft,
   ChevronsRight,
   LogOut,
@@ -28,6 +29,7 @@ import { useAppSelector, useAppDispatch } from '@/store/hooks';
 import { toggleSidebar } from '@/store/slices/uiSlice';
 import { clearCredentials } from '@/store/slices/authSlice';
 import { useLogoutMutation } from '@/store/api/authApi';
+import { useGetFeaturesQuery } from '@/store/api/featureApi';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -45,6 +47,7 @@ interface NavItem {
   label: string;
   href: string;
   icon: React.ElementType;
+  featureKey?: string;
 }
 
 interface NavSection {
@@ -73,9 +76,16 @@ const navSections: NavSection[] = [
   {
     title: 'AI',
     items: [
+      { label: 'AI Copilot', href: '/copilot', icon: Sparkles, featureKey: 'ai_expense_copilot' },
       { label: 'Smart Categorize', href: '/categorize', icon: Sparkles },
       { label: 'Insights', href: '/insights', icon: Brain },
       { label: 'Receipt Scanner', href: '/receipt-scanner', icon: ScanLine },
+      {
+        label: 'SMS Ingestion',
+        href: '/automation',
+        icon: Smartphone,
+        featureKey: 'android_sms_ingestion',
+      },
     ],
   },
 ];
@@ -103,7 +113,10 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
   const collapsed = !useAppSelector((s) => s.ui.sidebarOpen);
   const user = useAppSelector((s) => s.auth.user);
   const [logout] = useLogoutMutation();
-
+  const { data: featureFlags } = useGetFeaturesQuery(undefined, {
+    skip: !user?.id,
+  });
+  console.log({ featureFlags });
   const handleLogout = useCallback(async () => {
     try {
       await logout().unwrap();
@@ -222,7 +235,14 @@ export const Sidebar = ({ mobileOpen, onMobileClose }: SidebarProps) => {
                 {section.title}
               </p>
               {collapsed && <Separator className="mb-2 opacity-50" />}
-              <div className="flex flex-col gap-1">{section.items.map(renderNavItem)}</div>
+              <div className="flex flex-col gap-1">
+                {section.items
+                  .filter((item) => {
+                    if (!item.featureKey) return true;
+                    return Boolean(featureFlags?.[item.featureKey]);
+                  })
+                  .map(renderNavItem)}
+              </div>
             </div>
           ))}
         </div>
