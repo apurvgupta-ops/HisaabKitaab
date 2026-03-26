@@ -15,11 +15,11 @@ import {
   Loader2,
   type LucideIcon,
 } from 'lucide-react';
-import { formatCurrency } from '@splitwise/shared';
+import { type BudgetWithProgress, formatCurrency } from '@splitwise/shared';
 
 import { useAppSelector } from '@/store/hooks';
 import { useGetGroupsQuery } from '@/store/api/groupApi';
-import { useGetTransactionsQuery } from '@/store/api/transactionApi';
+import { useGetTransactionsQuery, useGetTransactionSummaryQuery } from '@/store/api/transactionApi';
 import { useGetBudgetsQuery } from '@/store/api/budgetApi';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -58,18 +58,18 @@ function DashboardSkeleton() {
   return (
     <div className="space-y-8">
       <div className="space-y-2">
-        <div className="bg-muted h-8 w-64 animate-pulse rounded" />
-        <div className="bg-muted h-4 w-96 animate-pulse rounded" />
+        <div className="h-8 w-64 animate-pulse rounded bg-muted" />
+        <div className="h-4 w-96 animate-pulse rounded bg-muted" />
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
           <Card key={i}>
             <CardHeader className="pb-2">
-              <div className="bg-muted h-4 w-24 animate-pulse rounded" />
+              <div className="h-4 w-24 animate-pulse rounded bg-muted" />
             </CardHeader>
             <CardContent>
-              <div className="bg-muted h-8 w-20 animate-pulse rounded" />
-              <div className="bg-muted mt-2 h-3 w-32 animate-pulse rounded" />
+              <div className="h-8 w-20 animate-pulse rounded bg-muted" />
+              <div className="mt-2 h-3 w-32 animate-pulse rounded bg-muted" />
             </CardContent>
           </Card>
         ))}
@@ -77,21 +77,21 @@ function DashboardSkeleton() {
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-1">
           <CardHeader>
-            <div className="bg-muted h-5 w-28 animate-pulse rounded" />
+            <div className="h-5 w-28 animate-pulse rounded bg-muted" />
           </CardHeader>
           <CardContent className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="bg-muted h-12 animate-pulse rounded" />
+              <div key={i} className="h-12 animate-pulse rounded bg-muted" />
             ))}
           </CardContent>
         </Card>
         <Card className="lg:col-span-2">
           <CardHeader>
-            <div className="bg-muted h-5 w-32 animate-pulse rounded" />
+            <div className="h-5 w-32 animate-pulse rounded bg-muted" />
           </CardHeader>
           <CardContent className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="bg-muted h-16 animate-pulse rounded" />
+              <div key={i} className="h-16 animate-pulse rounded bg-muted" />
             ))}
           </CardContent>
         </Card>
@@ -103,11 +103,11 @@ function DashboardSkeleton() {
 function DashboardError({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-      <div className="bg-destructive/10 flex h-14 w-14 items-center justify-center rounded-full">
-        <AlertCircle className="text-destructive h-6 w-6" />
+      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-destructive/10">
+        <AlertCircle className="h-6 w-6 text-destructive" />
       </div>
       <h2 className="mt-4 text-lg font-semibold">Failed to load dashboard</h2>
-      <p className="text-muted-foreground mt-1 max-w-sm text-sm">
+      <p className="mt-1 max-w-sm text-sm text-muted-foreground">
         We couldn&apos;t fetch your data. Please check your connection and try again.
       </p>
       <Button onClick={onRetry} variant="outline" className="mt-4 gap-2">
@@ -122,6 +122,11 @@ export default function DashboardPage() {
   const user = useAppSelector((s) => s.auth.user);
   const currency = user?.preferredCurrency ?? 'USD';
   const firstName = user?.name?.split(' ')[0] ?? 'there';
+  const monthStart = new Date();
+  monthStart.setDate(1);
+  monthStart.setHours(0, 0, 0, 0);
+  const monthEnd = new Date(monthStart);
+  monthEnd.setMonth(monthEnd.getMonth() + 1);
 
   const {
     data: groups,
@@ -138,45 +143,58 @@ export default function DashboardPage() {
   } = useGetTransactionsQuery({ page: 1, limit: 5 });
 
   const {
+    data: transactionSummary,
+    isLoading: summaryLoading,
+    isError: summaryError,
+    refetch: refetchSummary,
+  } = useGetTransactionSummaryQuery();
+
+  const {
+    data: monthlySummary,
+    isLoading: monthlySummaryLoading,
+    isError: monthlySummaryError,
+    refetch: refetchMonthlySummary,
+  } = useGetTransactionSummaryQuery({
+    startDate: monthStart.toISOString(),
+    endDate: monthEnd.toISOString(),
+  });
+
+  const {
     data: budgets,
     isLoading: budgetsLoading,
     isError: budgetsError,
     refetch: refetchBudgets,
   } = useGetBudgetsQuery();
 
-  const isLoading = groupsLoading || txLoading || budgetsLoading;
-  const isError = groupsError || txError || budgetsError;
+  const isLoading =
+    groupsLoading || txLoading || budgetsLoading || summaryLoading || monthlySummaryLoading;
+  const isError = groupsError || txError || budgetsError || summaryError || monthlySummaryError;
 
   const handleRetry = () => {
     refetchGroups();
     refetchTx();
+    refetchSummary();
+    refetchMonthlySummary();
     refetchBudgets();
   };
 
   if (isLoading) return <DashboardSkeleton />;
   if (isError) return <DashboardError onRetry={handleRetry} />;
 
-  const transactions = transactionsResult?.data ?? (transactionsResult as any) ?? [];
-  const txList = Array.isArray(transactions) ? transactions : [];
-
-  const monthlySpending = txList
-    .filter((t: any) => {
-      if (t.type !== 'expense') return false;
-      const txDate = new Date(t.date);
-      const now = new Date();
-      return txDate.getMonth() === now.getMonth() && txDate.getFullYear() === now.getFullYear();
-    })
-    .reduce((sum: number, t: any) => sum + Number(t.amount ?? 0), 0);
+  const txList = transactionsResult?.data ?? [];
+  const monthlySpending = Number(monthlySummary?.totalExpenses ?? 0);
+  const netBalance = Number(transactionSummary?.netBalance ?? 0);
 
   const budgetCount = budgets?.length ?? 0;
   const overBudgetCount =
-    budgets?.filter((b: any) => (b.spent ?? 0) > Number(b.limitAmount ?? 0)).length ?? 0;
+    budgets?.filter((b: BudgetWithProgress) => (b.spent ?? 0) > Number(b.limitAmount ?? 0))
+      .length ?? 0;
 
   const summaryCards: SummaryCardData[] = [
     {
       title: 'Total Balance',
-      value: formatCurrency(0, currency),
-      description: 'Across all groups',
+      value: formatCurrency(netBalance, currency),
+      description: 'Your net balance',
       icon: DollarSign,
     },
     {
@@ -210,7 +228,7 @@ export default function DashboardPage() {
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
           {greeting}, {firstName}
         </h1>
-        <p className="text-muted-foreground mt-1">
+        <p className="mt-1 text-muted-foreground">
           Here&apos;s what&apos;s happening with your expenses today.
         </p>
       </div>
@@ -222,16 +240,16 @@ export default function DashboardPage() {
           return (
             <Card key={card.title} className="group hover:shadow-md">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-muted-foreground text-sm font-medium">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
                   {card.title}
                 </CardTitle>
-                <div className="bg-primary/10 flex h-9 w-9 items-center justify-center rounded-lg">
-                  <Icon className="text-primary h-4 w-4" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
+                  <Icon className="h-4 w-4 text-primary" />
                 </div>
               </CardHeader>
               <CardContent>
                 <p className="text-2xl font-bold">{card.value}</p>
-                <p className="text-muted-foreground mt-1 text-xs">{card.description}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{card.description}</p>
               </CardContent>
             </Card>
           );
@@ -296,11 +314,11 @@ export default function DashboardPage() {
           <CardContent>
             {txList.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="bg-muted flex h-14 w-14 items-center justify-center rounded-full">
-                  <DollarSign className="text-muted-foreground h-6 w-6" />
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+                  <DollarSign className="h-6 w-6 text-muted-foreground" />
                 </div>
                 <p className="mt-4 text-sm font-medium">No activity yet</p>
-                <p className="text-muted-foreground mt-1 max-w-[220px] text-xs">
+                <p className="mt-1 max-w-[220px] text-xs text-muted-foreground">
                   Add an expense or create a group to get started!
                 </p>
                 <Button size="sm" className="mt-4 gap-2" asChild>
@@ -312,10 +330,10 @@ export default function DashboardPage() {
               </div>
             ) : (
               <div className="space-y-3">
-                {txList.slice(0, 5).map((tx: any) => (
+                {txList.slice(0, 5).map((tx) => (
                   <div
                     key={tx.id}
-                    className="hover:bg-accent/50 flex items-center gap-4 rounded-lg border p-3"
+                    className="flex items-center gap-4 rounded-lg border p-3 hover:bg-accent/50"
                   >
                     <Avatar className="h-10 w-10 shrink-0">
                       <AvatarFallback className="bg-primary/10 text-primary">
@@ -328,7 +346,7 @@ export default function DashboardPage() {
                     </Avatar>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium">{tx.description}</p>
-                      <p className="text-muted-foreground text-xs">
+                      <p className="text-xs text-muted-foreground">
                         {tx.account}
                         {tx.date && ` \u00b7 ${new Date(tx.date).toLocaleDateString()}`}
                       </p>
