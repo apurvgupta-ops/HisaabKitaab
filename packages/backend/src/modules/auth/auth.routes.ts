@@ -16,6 +16,7 @@ import {
   resetPassword,
   googleAuth,
   googleAuthCallback,
+  getInviteDetails,
 } from './auth.controller';
 
 const router = Router();
@@ -27,6 +28,7 @@ router.post('/logout', authenticate, logout);
 
 router.post('/password-reset/request', validate(passwordResetRequestSchema), requestPasswordReset);
 router.post('/password-reset/confirm', validate(passwordResetConfirmSchema), resetPassword);
+router.get('/invites/:token', getInviteDetails);
 
 // Google OAuth placeholders — will be wired up with Passport.js
 router.get('/google', googleAuth);

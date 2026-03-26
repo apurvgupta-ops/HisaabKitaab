@@ -20,6 +20,7 @@ import {
   LogOut,
   User,
   SlidersHorizontal,
+  Home,
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -65,6 +66,7 @@ const navSections: NavSection[] = [
     items: [
       { label: 'Transactions', href: '/transactions', icon: ArrowLeftRight },
       { label: 'Budgets', href: '/budgets', icon: PiggyBank },
+      { label: 'Household', href: '/household', icon: Home },
       { label: 'Reports', href: '/reports', icon: BarChart3 },
     ],
   },

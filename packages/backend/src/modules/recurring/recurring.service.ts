@@ -1,6 +1,7 @@
 import { prisma } from '../../shared/database/prisma';
 import { logger } from '../../shared/logger';
 import { emitToGroup } from '../../shared/socket/socketServer';
+import { Prisma } from '@prisma/client';
 
 interface RecurringConfig {
   frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
@@ -57,11 +58,14 @@ export const recurringService = {
         amount: Number(e.amount),
         amountInBase: Number(e.amountInBase),
         nextDue,
-        payers: e.payers.map((p) => ({ ...p, amount: Number(p.amount) })),
-        splits: e.splits.map((s) => ({
+        payers: e.payers.map((p: (typeof e.payers)[number]) => ({
+          ...p,
+          amount: Number(p.amount),
+        })),
+        splits: e.splits.map((s: (typeof e.splits)[number]) => ({
           ...s,
-          amount: s.amount ? Number(s.amount) : null,
-          percentage: s.percentage ? Number(s.percentage) : null,
+          amount: Number(s.amount),
+          percentage: s.percentage !== null ? Number(s.percentage) : null,
         })),
       };
     });
@@ -93,6 +97,11 @@ export const recurringService = {
       if (nextDue > now) continue;
 
       try {
+        const recurringConfigInput =
+          expense.recurringConfig === null
+            ? Prisma.JsonNull
+            : (expense.recurringConfig as Prisma.InputJsonValue);
+
         const newExpense = await prisma.expense.create({
           data: {
             groupId: expense.groupId,
@@ -102,19 +111,19 @@ export const recurringService = {
             description: expense.description,
             splitType: expense.splitType,
             categoryId: expense.categoryId,
-            tags: expense.tags as string[],
+            tags: expense.tags as Prisma.InputJsonValue,
             date: nextDue,
             createdBy: expense.createdBy,
             isRecurring: true,
-            recurringConfig: expense.recurringConfig ?? undefined,
+            recurringConfig: recurringConfigInput,
             payers: {
-              create: expense.payers.map((p) => ({
+              create: expense.payers.map((p: (typeof expense.payers)[number]) => ({
                 userId: p.userId,
                 amount: p.amount,
               })),
             },
             splits: {
-              create: expense.splits.map((s) => ({
+              create: expense.splits.map((s: (typeof expense.splits)[number]) => ({
                 userId: s.userId,
                 amount: s.amount,
                 percentage: s.percentage,

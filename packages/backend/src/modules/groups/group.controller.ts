@@ -8,7 +8,7 @@ import { groupService } from './group.service';
 export const getUserGroups = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   try {
     const { user } = req as AuthenticatedRequest;
@@ -25,7 +25,7 @@ export const getUserGroups = async (
 export const createGroup = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   try {
     const { user } = req as AuthenticatedRequest;
@@ -42,7 +42,7 @@ export const createGroup = async (
 export const getGroupById = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   try {
     const { user } = req as AuthenticatedRequest;
@@ -60,7 +60,7 @@ export const getGroupById = async (
 export const updateGroup = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   try {
     const { user } = req as AuthenticatedRequest;
@@ -78,7 +78,7 @@ export const updateGroup = async (
 export const deleteGroup = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   try {
     const { user } = req as AuthenticatedRequest;
@@ -96,17 +96,13 @@ export const deleteGroup = async (
 /**
  * POST /api/groups/:id/members — adds a member by email (admin only)
  */
-export const addMember = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+export const addMember = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { user } = req as AuthenticatedRequest;
     const id = req.params.id as string;
     const { email, role } = req.body;
-    const group = await groupService.addMember(id, user.id, email, role ?? 'member');
-    res.status(200).json({ success: true, data: group });
+    const result = await groupService.addMember(id, user.id, email, role ?? 'member');
+    res.status(200).json({ success: true, data: result });
   } catch (err) {
     next(err);
   }
@@ -118,7 +114,7 @@ export const addMember = async (
 export const removeMember = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   try {
     const { user } = req as AuthenticatedRequest;
@@ -140,7 +136,7 @@ export const removeMember = async (
 export const updateMemberRole = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> => {
   try {
     const { user } = req as AuthenticatedRequest;

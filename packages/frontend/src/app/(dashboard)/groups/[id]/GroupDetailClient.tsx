@@ -90,16 +90,16 @@ function PageSkeleton() {
   return (
     <div className="animate-pulse space-y-6">
       <div className="flex items-center gap-3">
-        <div className="bg-muted h-9 w-9 rounded" />
+        <div className="h-9 w-9 rounded bg-muted" />
         <div className="space-y-2">
-          <div className="bg-muted h-6 w-48 rounded" />
-          <div className="bg-muted h-4 w-24 rounded" />
+          <div className="h-6 w-48 rounded bg-muted" />
+          <div className="h-4 w-24 rounded bg-muted" />
         </div>
       </div>
-      <div className="bg-muted h-10 w-full rounded" />
+      <div className="h-10 w-full rounded bg-muted" />
       <div className="space-y-3">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="bg-muted h-16 w-full rounded-lg" />
+          <div key={i} className="h-16 w-full rounded-lg bg-muted" />
         ))}
       </div>
     </div>
@@ -129,11 +129,21 @@ function MembersTab({
 
   const onAddMember = async (values: AddMemberInput) => {
     try {
-      await addMember({ groupId, email: values.email, role: values.role }).unwrap();
-      toast({ title: 'Member added', description: 'New member has been invited.' });
+      const result = await addMember({ groupId, email: values.email, role: values.role }).unwrap();
+      toast({
+        title: result.invited ? 'Invite sent' : 'Member added',
+        description: result.invited
+          ? `Invite email sent to ${result.email}. They can join by creating an account.`
+          : 'Member has been added to this group.',
+      });
       memberForm.reset();
-    } catch {
-      toast({ title: 'Error', description: 'Failed to add member.', variant: 'destructive' });
+    } catch (err: unknown) {
+      const error = err as { data?: { message?: string; code?: string }; status?: number };
+      toast({
+        title: 'Error',
+        description: error.data?.message ?? 'Failed to add member.',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -187,7 +197,7 @@ function MembersTab({
               </Button>
             </form>
             {memberForm.formState.errors.email && (
-              <p className="text-destructive mt-2 text-sm">
+              <p className="mt-2 text-sm text-destructive">
                 {memberForm.formState.errors.email.message}
               </p>
             )}
@@ -199,7 +209,7 @@ function MembersTab({
         {members.map((member) => (
           <div key={member.id} className="flex items-center gap-3 rounded-lg border p-3">
             <Avatar className="h-9 w-9">
-              <AvatarFallback className="bg-primary/10 text-primary text-sm">
+              <AvatarFallback className="bg-primary/10 text-sm text-primary">
                 {member.user?.name?.[0]?.toUpperCase() ?? '?'}
               </AvatarFallback>
             </Avatar>
@@ -207,10 +217,10 @@ function MembersTab({
               <p className="truncate text-sm font-medium">
                 {member.user?.name ?? 'Unknown'}
                 {member.userId === currentUserId && (
-                  <span className="text-muted-foreground ml-1.5 text-xs">(You)</span>
+                  <span className="ml-1.5 text-xs text-muted-foreground">(You)</span>
                 )}
               </p>
-              <p className="text-muted-foreground text-xs">{member.user?.email ?? ''}</p>
+              <p className="text-xs text-muted-foreground">{member.user?.email ?? ''}</p>
             </div>
             <Badge variant={member.role === 'admin' ? 'default' : 'secondary'} className="shrink-0">
               {member.role === 'admin' ? (
@@ -224,7 +234,7 @@ function MembersTab({
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-muted-foreground hover:text-destructive h-8 w-8 shrink-0"
+                className="h-8 w-8 shrink-0 text-muted-foreground hover:text-destructive"
                 disabled={isRemoving && removingId === member.userId}
                 onClick={() => handleRemove(member.userId)}
               >
@@ -343,7 +353,7 @@ function SettingsTab({
           <div className="flex items-center justify-between">
             <div>
               <Label className="text-sm">Simplify Debts</Label>
-              <p className="text-muted-foreground text-xs">
+              <p className="text-xs text-muted-foreground">
                 Minimize the number of transactions needed
               </p>
             </div>
@@ -356,7 +366,7 @@ function SettingsTab({
           <div className="flex items-center justify-between">
             <div>
               <Label className="text-sm">Allow Settlements</Label>
-              <p className="text-muted-foreground text-xs">
+              <p className="text-xs text-muted-foreground">
                 Members can record payments to each other
               </p>
             </div>
@@ -428,7 +438,7 @@ export default function GroupDetailPage() {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <p className="text-lg font-medium">Group not found</p>
-        <p className="text-muted-foreground mt-2 text-sm">
+        <p className="mt-2 text-sm text-muted-foreground">
           The group you're looking for doesn't exist or you don't have access.
         </p>
         <Button className="mt-4" variant="outline" asChild>
@@ -458,7 +468,7 @@ export default function GroupDetailPage() {
                 {config.label}
               </Badge>
             </div>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               {group.members.length} member{group.members.length !== 1 && 's'} &middot;{' '}
               {group.currency}
             </p>
@@ -495,7 +505,7 @@ export default function GroupDetailPage() {
           {expensesLoading ? (
             <div className="animate-pulse space-y-3">
               {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="bg-muted h-16 rounded-lg" />
+                <div key={i} className="h-16 rounded-lg bg-muted" />
               ))}
             </div>
           ) : (
@@ -528,7 +538,7 @@ export default function GroupDetailPage() {
               {simplifiedDebts.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
                   <p className="text-sm font-medium">All settled up!</p>
-                  <p className="text-muted-foreground mt-1 text-xs">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     No outstanding debts in this group.
                   </p>
                 </div>
@@ -550,7 +560,7 @@ export default function GroupDetailPage() {
                           <span className="text-muted-foreground"> owes </span>
                           <span className="font-medium">{debt.toName}</span>
                         </p>
-                        <p className="text-primary text-xs font-semibold">
+                        <p className="text-xs font-semibold text-primary">
                           {formatCurrency(debt.amount, group.currency)}
                         </p>
                       </div>

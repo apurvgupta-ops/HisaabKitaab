@@ -46,7 +46,7 @@ export const sendSettlementNotification = async (
   to: string,
   fromName: string,
   amount: string,
-  groupName: string
+  groupName: string,
 ): Promise<boolean> => {
   return sendEmail({
     to,
@@ -65,7 +65,7 @@ export const sendBudgetAlert = async (
   to: string,
   categoryName: string,
   percentage: number,
-  limit: string
+  limit: string,
 ): Promise<boolean> => {
   return sendEmail({
     to,
@@ -77,5 +77,56 @@ export const sendBudgetAlert = async (
         <p>Consider reviewing your spending in this category.</p>
       </div>
     `,
+  });
+};
+
+export const sendGroupInviteEmail = async (
+  to: string,
+  groupName: string,
+  inviterName: string,
+  inviteLink: string,
+  role: 'admin' | 'member',
+): Promise<boolean> => {
+  return sendEmail({
+    to,
+    subject: `You're invited to join ${groupName} on Splitwise`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto;">
+        <h2>Group Invitation</h2>
+        <p><strong>${inviterName}</strong> invited you to join <strong>${groupName}</strong> as <strong>${role}</strong>.</p>
+        <p>Create your account and accept the invite using the button below.</p>
+        <p style="margin: 24px 0;">
+          <a href="${inviteLink}" style="background:#059669;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;display:inline-block;">
+            Accept Invitation
+          </a>
+        </p>
+        <p style="font-size:12px;color:#64748b;word-break:break-all;">${inviteLink}</p>
+      </div>
+    `,
+    text: `You were invited by ${inviterName} to join ${groupName} as ${role}. Accept: ${inviteLink}`,
+  });
+};
+
+export const sendGroupAddedNotification = async (
+  to: string,
+  groupName: string,
+  inviterName: string,
+  groupLink: string,
+): Promise<boolean> => {
+  return sendEmail({
+    to,
+    subject: `You were added to ${groupName}`,
+    html: `
+      <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto;">
+        <h2>You've been added to a group</h2>
+        <p><strong>${inviterName}</strong> added you to <strong>${groupName}</strong>.</p>
+        <p style="margin: 24px 0;">
+          <a href="${groupLink}" style="background:#059669;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;display:inline-block;">
+            Open Group
+          </a>
+        </p>
+      </div>
+    `,
+    text: `${inviterName} added you to ${groupName}. Open: ${groupLink}`,
   });
 };

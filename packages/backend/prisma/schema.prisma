@@ -29,6 +29,8 @@ model User {
   transactions    Transaction[]
   budgets         Budget[]
   categories      Category[]      @relation("UserCategories")
+  createdGroupInvites GroupInvite[] @relation("GroupInviteCreator")
+  acceptedGroupInvites GroupInvite[] @relation("GroupInviteAcceptor")
 
   @@index([email])
   @@map("users")
@@ -48,9 +50,35 @@ model Group {
   members     GroupMember[]
   expenses    Expense[]
   settlements Settlement[]
+  invites     GroupInvite[]
 
   @@index([createdBy])
   @@map("groups")
+}
+
+model GroupInvite {
+  id         String   @id @default(uuid()) @db.Uuid
+  groupId    String   @db.Uuid
+  email      String   @db.VarChar(255)
+  role       String   @default("member") @db.VarChar(20)
+  token      String   @unique @db.VarChar(120)
+  status     String   @default("pending") @db.VarChar(20)
+  invitedBy  String   @db.Uuid
+  acceptedBy String?  @db.Uuid
+  expiresAt  DateTime
+  acceptedAt DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  group          Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  invitedByUser  User  @relation("GroupInviteCreator", fields: [invitedBy], references: [id])
+  acceptedByUser User? @relation("GroupInviteAcceptor", fields: [acceptedBy], references: [id])
+
+  @@index([groupId])
+  @@index([email])
+  @@index([token])
+  @@index([status, expiresAt])
+  @@map("group_invites")
 }
 
 model GroupMember {

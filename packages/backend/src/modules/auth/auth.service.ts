@@ -6,6 +6,7 @@ import { redis } from '../../shared/cache/redis';
 import { env } from '../../config';
 import { AppError } from '../../middleware/errorHandler';
 import { logger } from '../../shared/logger';
+import { groupService } from '../groups/group.service';
 
 const SALT_ROUNDS = 12;
 const REFRESH_TOKEN_PREFIX = 'refresh_token:';
@@ -71,18 +72,43 @@ export const authService = {
    * Registers a new user with bcrypt-hashed password and returns
    * the created user along with JWT tokens.
    */
-  async register(name: string, email: string, password: string): Promise<AuthResult> {
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+  async register(
+    name: string,
+    email: string,
+    password: string,
+    inviteToken?: string,
+  ): Promise<AuthResult> {
+    const normalizedEmail = email.trim().toLowerCase();
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        email: {
+          equals: normalizedEmail,
+          mode: 'insensitive',
+        },
+      },
+    });
+
     if (existingUser) {
       throw AppError.conflict('An account with this email already exists');
+    }
+
+    if (inviteToken) {
+      const inviteDetails = await groupService.getInviteDetails(inviteToken);
+      if (inviteDetails.email.trim().toLowerCase() !== normalizedEmail) {
+        throw AppError.badRequest('This invite is for a different email address');
+      }
     }
 
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
     const user = await prisma.user.create({
-      data: { name, email, passwordHash },
+      data: { name, email: normalizedEmail, passwordHash },
       select: { id: true, email: true, name: true, avatar: true, preferredCurrency: true },
     });
+
+    if (inviteToken) {
+      await groupService.acceptInviteToken(inviteToken, normalizedEmail, user.id);
+    }
 
     const tokens = await generateTokens(user.id, user.email);
     logger.info({ userId: user.id }, 'User registered');
@@ -107,7 +133,6 @@ export const authService = {
       },
     });
 
-    console.log({ user });
     if (!user || !user.passwordHash) {
       throw AppError.unauthorized('Invalid email or password');
     }
@@ -249,5 +274,9 @@ export const authService = {
     }
 
     logger.info({ userId }, 'Password reset completed');
+  },
+
+  async getInviteDetails(token: string) {
+    return groupService.getInviteDetails(token);
   },
 };

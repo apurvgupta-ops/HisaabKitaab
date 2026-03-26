@@ -7,10 +7,31 @@ import { authService } from './auth.service';
  */
 export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { name, email, password } = req.body as { name: string; email: string; password: string };
-    const result = await authService.register(name, email, password);
+    const { name, email, password, inviteToken } = req.body as {
+      name: string;
+      email: string;
+      password: string;
+      inviteToken?: string;
+    };
+    const result = await authService.register(name, email, password, inviteToken);
 
     res.status(201).json({ success: true, data: result });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * GET /api/auth/invites/:token
+ */
+export const getInviteDetails = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const details = await authService.getInviteDetails(String(req.params.token));
+    res.status(200).json({ success: true, data: details });
   } catch (err) {
     next(err);
   }

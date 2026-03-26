@@ -4,6 +4,7 @@ import type {
   AuthResponse,
   RefreshTokenRequest,
   AuthTokens,
+  InviteDetailsResponse,
 } from '@splitwise/shared';
 import { apiSlice } from './apiSlice';
 
@@ -25,6 +26,10 @@ export const authApi = apiSlice.injectEndpoints({
       }),
     }),
 
+    getInviteDetails: builder.query<InviteDetailsResponse, string>({
+      query: (token) => `auth/invites/${token}`,
+    }),
+
     refreshToken: builder.mutation<AuthTokens, RefreshTokenRequest>({
       query: (body) => ({
         url: 'auth/refresh',
@@ -42,5 +47,10 @@ export const authApi = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation, useRefreshTokenMutation, useLogoutMutation } =
-  authApi;
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useGetInviteDetailsQuery,
+  useRefreshTokenMutation,
+  useLogoutMutation,
+} = authApi;

@@ -26,7 +26,7 @@
 
 ## Overview
 
-A production-grade expense splitting and money management application. Supports group expense tracking, debt simplification, budgets, recurring expenses, AI-powered receipt scanning, financial insights, and real-time notifications.
+A production-grade expense splitting and money management application. Supports group expense tracking, debt simplification, budgets, recurring expenses, household fairness summaries, AI-powered receipt scanning, financial insights, and real-time notifications.
 
 **Architecture style**: Monorepo with layered backend (Controller → Service → Repository) and component-based frontend (Next.js App Router + RTK Query).
 
@@ -46,6 +46,7 @@ A production-grade expense splitting and money management application. Supports 
 | **Job Queue**        | BullMQ                              | 5.x       | Background jobs (reminders, recurring expenses)  |
 | **Real-Time**        | Socket.IO                           | 4.x       | WebSocket events (expenses, settlements, nudges) |
 | **Frontend**         | Next.js (App Router)                | 14.x      | React framework with SSR                         |
+| **Mobile**           | Expo (React Native)                 | 53.x      | Android-first capture and automation companion   |
 | **State**            | Redux Toolkit + RTK Query           | 2.x       | Global state & API data fetching                 |
 | **UI**               | Tailwind CSS + Radix UI + shadcn/ui | 3.x       | Styling & accessible components                  |
 | **Charts**           | Recharts                            | 2.x       | Data visualization                               |
@@ -97,6 +98,7 @@ splitwise/                    ← Root (npm workspace host)
        ↑
        ├── @splitwise/backend (imports schemas, types, utils)
        └── @splitwise/frontend (imports types for API responses)
+       +-- @splitwise/mobile (imports shared types and helpers for mobile flows)
 ```
 
 ---
@@ -163,6 +165,7 @@ splitwise/
 │   │       │   ├── expenses/         # Expense CRUD, splitting, balances
 │   │       │   ├── features/         # Feature flags
 │   │       │   ├── groups/           # Group CRUD, members, roles
+│   │       │   ├── household/        # Household fairness summaries (monthly, per-group)
 │   │       │   ├── payments/         # Stripe webhook handler
 │   │       │   ├── recurring/        # Recurring expense processor
 │   │       │   ├── reminders/        # Payment nudges & auto-reminders
@@ -205,6 +208,7 @@ splitwise/
 │           │       ├── groups/       # Groups list + [id] detail
 │           │       ├── transactions/ # Personal transactions
 │           │       ├── budgets/      # Budget management
+│           │       ├── household/    # Household fairness dashboard
 │           │       ├── reports/      # Financial reports
 │           │       ├── activity/     # Activity feed
 │           │       ├── settings/     # User settings
@@ -249,6 +253,7 @@ splitwise/
 │               │   ├── expenseApi.ts
 │               │   ├── featureApi.ts
 │               │   ├── groupApi.ts
+│               │   ├── householdApi.ts
 │               │   ├── reminderApi.ts
 │               │   ├── settlementApi.ts
 │               │   ├── transactionApi.ts
@@ -334,7 +339,7 @@ The dashboard layout wraps all protected pages with:
 Redux Store
 ├── auth slice     → JWT tokens, user data, hydration from localStorage
 ├── ui slice       → Sidebar state, theme preference, active group
-└── api slice      → RTK Query (13 API slices, automatic caching & invalidation)
+└── api slice      → RTK Query (14 API slices, automatic caching & invalidation)
 ```
 
 RTK Query handles all API communication with:
@@ -361,9 +366,26 @@ RootLayout
 
 ---
 
+## Mobile Companion (Phase 2)
+
+A new workspace package `packages/mobile` adds an Expo React Native companion app with Android-first automation foundations.
+
+**Current mobile scope:**
+
+- Receipt capture via camera and OCR upload to `POST /api/v1/uploads/receipt`
+- Android automation adapter scaffold for SMS/notification ingestion (permission-first)
+- Normalized automation inbox proposals for user review/approval flows
+
+**Platform strategy:**
+
+- Android: automation-capable ingestion path with a native bridge integration point
+- iOS: safe fallback behavior with manual and receipt-driven capture
+
+---
+
 ## Shared Package
 
-`@splitwise/shared` is compiled to CommonJS (`tsc`) and consumed by both backend and frontend.
+`@splitwise/shared` is compiled to CommonJS (`tsc`) and consumed by backend, frontend, and mobile packages.
 
 | Export      | Purpose                                                                           |
 | ----------- | --------------------------------------------------------------------------------- |
@@ -424,6 +446,7 @@ All endpoints are under `/api/v1`. Authentication is via `Authorization: Bearer 
 | **Settlements**  | `/settlements`  | `POST /`, `GET /group/:groupId`, `GET /group/:groupId/simplified`, `GET /me`, `PATCH /:id/status`                                                                                              |
 | **Transactions** | `/transactions` | `GET /`, `GET /summary`, `POST /`, `GET /:id`, `PUT /:id`, `DELETE /:id`                                                                                                                       |
 | **Budgets**      | `/budgets`      | `GET /`, `GET /alerts`, `POST /`, `GET /:id`, `PUT /:id`, `DELETE /:id`                                                                                                                        |
+| **Household**    | `/household`    | `GET /:groupId/summary` (optional query: `month=YYYY-MM`)                                                                                                                                      |
 | **Categories**   | `/categories`   | `GET /`, `POST /`, `PUT /:id`, `DELETE /:id`                                                                                                                                                   |
 | **AI**           | `/ai`           | `POST /categorize`, `POST /parse`, `GET /insights`, `POST /chat`                                                                                                                               |
 | **Uploads**      | `/uploads`      | `POST /` (single), `POST /multiple`, `POST /receipt` (OCR)                                                                                                                                     |

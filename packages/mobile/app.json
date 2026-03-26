@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Splitwise Mobile",
+    "slug": "splitwise-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.splitwise.mobile",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Splitwise uses your camera to scan receipts."
+      }
+    },
+    "android": {
+      "package": "com.splitwise.mobile",
+      "permissions": [
+        "CAMERA",
+        "POST_NOTIFICATIONS",
+        "RECEIVE_BOOT_COMPLETED",
+        "RECEIVE_SMS",
+        "READ_SMS"
+      ]
+    },
+    "extra": {
+      "apiBaseUrl": "http://localhost:4000/api/v1"
+    }
+  }
+}

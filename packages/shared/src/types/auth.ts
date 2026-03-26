@@ -7,6 +7,18 @@ export interface RegisterRequest {
   name: string;
   email: string;
   password: string;
+  inviteToken?: string;
+}
+
+export interface InviteDetailsResponse {
+  token: string;
+  email: string;
+  role: string;
+  group: {
+    id: string;
+    name: string;
+  };
+  expiresAt: string | Date;
 }
 
 export interface AuthTokens {

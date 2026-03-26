@@ -13,6 +13,7 @@ import reportRoutes from '../modules/reports/report.routes';
 import featureRoutes from '../modules/features/feature.routes';
 import reminderRoutes from '../modules/reminders/reminder.routes';
 import recurringRoutes from '../modules/recurring/recurring.routes';
+import householdRoutes from '../modules/household/household.routes';
 
 /**
  * API v1 router. All REST endpoints are versioned under /api/v1.
@@ -34,5 +35,6 @@ v1Router.use('/reports', reportRoutes);
 v1Router.use('/features', featureRoutes);
 v1Router.use('/reminders', reminderRoutes);
 v1Router.use('/recurring', recurringRoutes);
+v1Router.use('/household', householdRoutes);
 
 export default v1Router;

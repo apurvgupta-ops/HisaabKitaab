@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registerSchema, type RegisterInput } from '@splitwise/shared';
@@ -19,7 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { useRegisterMutation } from '@/store/api/authApi';
+import { useRegisterMutation, useGetInviteDetailsQuery } from '@/store/api/authApi';
 import { useAppDispatch } from '@/store/hooks';
 import { setCredentials } from '@/store/slices/authSlice';
 
@@ -51,14 +51,22 @@ function getStrengthLabel(score: number) {
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const [registerUser, { isLoading }] = useRegisterMutation();
   const [showPassword, setShowPassword] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const inviteToken = searchParams.get('invite')?.trim() ?? '';
+  const {
+    data: inviteDetails,
+    isLoading: inviteLoading,
+    isError: inviteError,
+  } = useGetInviteDetailsQuery(inviteToken, { skip: !inviteToken });
 
   const {
     register,
     handleSubmit,
+    setValue,
     watch,
     formState: { errors },
   } = useForm<RegisterInput>({
@@ -68,6 +76,12 @@ export default function RegisterPage() {
 
   const passwordValue = watch('password', '');
 
+  useEffect(() => {
+    if (inviteDetails?.email) {
+      setValue('email', inviteDetails.email);
+    }
+  }, [inviteDetails?.email, setValue]);
+
   const strengthScore = useMemo(
     () => PASSWORD_CHECKS.filter((c) => c.test(passwordValue)).length,
     [passwordValue],
@@ -76,7 +90,10 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterInput) => {
     setApiError(null);
     try {
-      const response = await registerUser(data).unwrap();
+      const response = await registerUser({
+        ...data,
+        inviteToken: inviteToken || undefined,
+      }).unwrap();
       dispatch(
         setCredentials({
           user: response.user,
@@ -99,6 +116,20 @@ export default function RegisterPage() {
       </CardHeader>
 
       <CardContent className="space-y-5">
+        {inviteToken && (
+          <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            {inviteLoading && 'Validating invite...'}
+            {!inviteLoading && inviteDetails && (
+              <>
+                You were invited to join <strong>{inviteDetails.group.name}</strong> as{' '}
+                <strong>{inviteDetails.role}</strong>. Register with{' '}
+                <strong>{inviteDetails.email}</strong> to accept.
+              </>
+            )}
+            {!inviteLoading && inviteError && 'Invite link is invalid or expired.'}
+          </div>
+        )}
+
         {apiError && (
           <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             {apiError}
@@ -109,7 +140,7 @@ export default function RegisterPage() {
           <div className="space-y-2">
             <Label htmlFor="name">Full Name</Label>
             <div className="relative">
-              <User className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+              <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 id="name"
                 type="text"
@@ -124,12 +155,13 @@ export default function RegisterPage() {
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <div className="relative">
-              <Mail className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+              <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 id="email"
                 type="email"
                 placeholder="you@example.com"
                 className="pl-10"
+                readOnly={!!inviteDetails?.email}
                 {...register('email')}
               />
             </div>
@@ -139,7 +171,7 @@ export default function RegisterPage() {
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <div className="relative">
-              <Lock className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+              <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
@@ -150,7 +182,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="text-muted-foreground hover:text-foreground absolute right-3 top-1/2 -translate-y-1/2 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -231,7 +263,7 @@ export default function RegisterPage() {
             <span className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card text-muted-foreground px-2">or continue with</span>
+            <span className="bg-card px-2 text-muted-foreground">or continue with</span>
           </div>
         </div>
 
@@ -242,7 +274,7 @@ export default function RegisterPage() {
       </CardContent>
 
       <CardFooter className="justify-center pb-6">
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground">
           Already have an account?{' '}
           <Link
             href="/login"

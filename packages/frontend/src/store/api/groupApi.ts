@@ -35,6 +35,12 @@ interface RemoveMemberRequest {
   userId: string;
 }
 
+interface AddMemberResponse {
+  group: GroupWithMembers;
+  invited: boolean;
+  email: string;
+}
+
 export const groupApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getGroups: builder.query<Group[], void>({
@@ -73,7 +79,7 @@ export const groupApi = apiSlice.injectEndpoints({
       invalidatesTags: ['Group'],
     }),
 
-    addMember: builder.mutation<GroupWithMembers, AddMemberRequest>({
+    addMember: builder.mutation<AddMemberResponse, AddMemberRequest>({
       query: ({ groupId, ...body }) => ({
         url: `groups/${groupId}/members`,
         method: 'POST',

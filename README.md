@@ -1,4 +1,4 @@
-# Splitwise
+﻿# Splitwise
 
 Production-grade expense splitting and money management application built as a TypeScript monorepo.
 
@@ -46,6 +46,7 @@ A full-featured Splitwise-style application that supports group expense splittin
 | **Runtime**          | Node.js 20+                                                   |
 | **Language**         | TypeScript 5.7 (strict mode)                                  |
 | **Frontend**         | Next.js 14 (App Router), React 18, Redux Toolkit + RTK Query  |
+| **Mobile**           | Expo (React Native), TypeScript                               |
 | **UI**               | Tailwind CSS 3.4, Radix UI primitives, Lucide icons, Recharts |
 | **Forms**            | React Hook Form + Zod resolver                                |
 | **Backend**          | Express 4, Apollo Server (GraphQL), Socket.IO                 |
@@ -66,49 +67,58 @@ A full-featured Splitwise-style application that supports group expense splittin
 
 ```
 splitwise/
-├── packages/
-│   ├── shared/              # Shared types, Zod schemas, utilities
-│   │   └── src/
-│   │       ├── types/       # TypeScript interfaces (auth, user, group, expense, ...)
-│   │       ├── schemas/     # Zod validation schemas
-│   │       └── utils/       # Currency, date, pagination helpers
-│   │
-│   ├── backend/             # Express API server
-│   │   ├── prisma/          # Schema, migrations, seed
-│   │   └── src/
-│   │       ├── config/      # Environment configuration
-│   │       ├── middleware/   # Auth, validation, rate limiting, error handling
-│   │       ├── modules/     # Domain modules (controller → service → routes)
-│   │       ├── graphql/     # Apollo Server type defs + resolvers
-│   │       ├── routes/     # API versioning (v1 router)
-│   │       ├── docs/        # OpenAPI spec generation
-│   │       └── shared/      # Database, cache, logger, queue, socket, services
-│   │
-│   └── frontend/            # Next.js web application
-│       └── src/
-│           ├── app/         # App Router pages, layouts, error.tsx, loading.tsx
-│           ├── components/  # UI components, ErrorBoundary, layout, domain components
-│           ├── store/       # Redux store, RTK Query API slices (with token refresh), auth/ui slices
-│           └── lib/         # Utility functions
-│
-├── .husky/                  # Git hooks (pre-commit, commit-msg)
-├── turbo.json               # Turborepo task pipeline configuration
-├── tsconfig.base.json       # Shared TypeScript compiler options
-├── eslint.config.mjs        # Root ESLint flat config
-├── .prettierrc              # Prettier formatting rules
-├── .editorconfig            # Editor-agnostic formatting
-├── docker-compose.yml       # Multi-service Docker setup
-└── package.json             # Workspace root with scripts and hoisted devDependencies
+â”œâ”€â”€ packages/
+â”‚   â”œâ”€â”€ shared/              # Shared types, Zod schemas, utilities
+â”‚   â”‚   â””â”€â”€ src/
+â”‚   â”‚       â”œâ”€â”€ types/       # TypeScript interfaces (auth, user, group, expense, ...)
+â”‚   â”‚       â”œâ”€â”€ schemas/     # Zod validation schemas
+â”‚   â”‚       â””â”€â”€ utils/       # Currency, date, pagination helpers
+â”‚   â”‚
+â”‚   â”œâ”€â”€ backend/             # Express API server
+â”‚   â”‚   â”œâ”€â”€ prisma/          # Schema, migrations, seed
+â”‚   â”‚   â””â”€â”€ src/
+â”‚   â”‚       â”œâ”€â”€ config/      # Environment configuration
+â”‚   â”‚       â”œâ”€â”€ middleware/   # Auth, validation, rate limiting, error handling
+â”‚   â”‚       â”œâ”€â”€ modules/     # Domain modules (controller â†’ service â†’ routes)
+â”‚   â”‚       â”œâ”€â”€ graphql/     # Apollo Server type defs + resolvers
+â”‚   â”‚       â”œâ”€â”€ routes/     # API versioning (v1 router)
+â”‚   â”‚       â”œâ”€â”€ docs/        # OpenAPI spec generation
+â”‚   â”‚       â””â”€â”€ shared/      # Database, cache, logger, queue, socket, services
+â”‚   â”‚
+â”‚   â””â”€â”€ frontend/            # Next.js web application
+â”‚       â””â”€â”€ src/
+â”‚           â”œâ”€â”€ app/         # App Router pages, layouts, error.tsx, loading.tsx
+â”‚           â”œâ”€â”€ components/  # UI components, ErrorBoundary, layout, domain components
+â”‚           â”œâ”€â”€ store/       # Redux store, RTK Query API slices (with token refresh), auth/ui slices
+â”‚           â””â”€â”€ lib/         # Utility functions
+â”‚
+â”œâ”€â”€ .husky/                  # Git hooks (pre-commit, commit-msg)
+â”œâ”€â”€ turbo.json               # Turborepo task pipeline configuration
+â”œâ”€â”€ tsconfig.base.json       # Shared TypeScript compiler options
+â”œâ”€â”€ eslint.config.mjs        # Root ESLint flat config
+â”œâ”€â”€ .prettierrc              # Prettier formatting rules
+â”œâ”€â”€ .editorconfig            # Editor-agnostic formatting
+â”œâ”€â”€ docker-compose.yml       # Multi-service Docker setup
+â””â”€â”€ package.json             # Workspace root with scripts and hoisted devDependencies
 ```
 
 ### Dependency Graph
 
 ```
-@splitwise/frontend ──→ @splitwise/shared
-@splitwise/backend  ──→ @splitwise/shared
+@splitwise/frontend â”€â”€â†’ @splitwise/shared
+@splitwise/backend  â”€â”€â†’ @splitwise/shared
+@splitwise/mobile   -> @splitwise/shared
 ```
 
-Both `frontend` and `backend` consume shared Zod schemas for validation and TypeScript types for API contracts. The shared package is built first via Turborepo's `dependsOn: ["^build"]` pipeline.
+Both `frontend`, `backend`, and `mobile` consume shared Zod schemas for validation and TypeScript types for API contracts. The shared package is built first via Turborepo's `dependsOn: ["^build"]` pipeline.
+
+### Mobile Package (Phase 2)
+
+`packages/mobile` is the companion Expo React Native app focused on Android-first automation:
+
+- Permission-first SMS/notification automation adapter scaffold
+- Receipt camera capture + OCR upload (`/api/v1/uploads/receipt`)
+- Automation inbox normalization for approval workflows
 
 ---
 
@@ -119,30 +129,30 @@ Both `frontend` and `backend` consume shared Zod schemas for validation and Type
 The backend follows a **layered architecture** with domain-driven module organization:
 
 ```
-Request → Middleware (auth, validate, rateLimit) → Controller → Service → Prisma → Response
+Request â†’ Middleware (auth, validate, rateLimit) â†’ Controller â†’ Service â†’ Prisma â†’ Response
 ```
 
 **Middleware stack (in order):**
 
-1. `helmet` — Security headers
-2. `cors` — Cross-origin configuration (frontend URL only); allows `X-CSRF-Token`, `X-Idempotency-Key`
-3. `compression` — Gzip response compression
-4. `requestTracer` — Assigns `X-Request-Id`, logs request lifecycle with duration and user ID
-5. `express.json` — Body parsing (10MB limit)
-6. `apiLimiter` — Redis-backed rate limiting on `/api/*` (via `rate-limit-redis`)
-7. `authLimiter` — Stricter rate limit on `/login` and `/register` (20 req / 15 min)
-8. `graphqlLimiter` — Rate limit on `/graphql` (200 req / min)
-9. `authenticate` — JWT Bearer token verification (per-route)
-10. `validate` — Zod schema validation (body, query, or params)
-11. `errorHandler` — Centralized error handling (AppError, ZodError, Prisma errors, Sentry capture)
+1. `helmet` â€” Security headers
+2. `cors` â€” Cross-origin configuration (frontend URL only); allows `X-CSRF-Token`, `X-Idempotency-Key`
+3. `compression` â€” Gzip response compression
+4. `requestTracer` â€” Assigns `X-Request-Id`, logs request lifecycle with duration and user ID
+5. `express.json` â€” Body parsing (10MB limit)
+6. `apiLimiter` â€” Redis-backed rate limiting on `/api/*` (via `rate-limit-redis`)
+7. `authLimiter` â€” Stricter rate limit on `/login` and `/register` (20 req / 15 min)
+8. `graphqlLimiter` â€” Rate limit on `/graphql` (200 req / min)
+9. `authenticate` â€” JWT Bearer token verification (per-route)
+10. `validate` â€” Zod schema validation (body, query, or params)
+11. `errorHandler` â€” Centralized error handling (AppError, ZodError, Prisma errors, Sentry capture)
 
 **Module structure (each domain follows this pattern):**
 
 ```
 modules/<domain>/
-├── <domain>.controller.ts   # Request handling, response formatting
-├── <domain>.service.ts      # Business logic, database operations
-└── <domain>.routes.ts       # Express router with middleware chain
+â”œâ”€â”€ <domain>.controller.ts   # Request handling, response formatting
+â”œâ”€â”€ <domain>.service.ts      # Business logic, database operations
+â””â”€â”€ <domain>.routes.ts       # Express router with middleware chain
 ```
 
 **Environment validation:**
@@ -158,7 +168,7 @@ All environment variables are validated at startup using a Zod schema (`config/e
 5. Initialize Socket.IO on the same HTTP server
 6. Listen on configured port
 
-**Graceful shutdown** handles `SIGTERM` and `SIGINT` — closes HTTP server, disconnects Prisma and Redis.
+**Graceful shutdown** handles `SIGTERM` and `SIGINT` â€” closes HTTP server, disconnects Prisma and Redis.
 
 **Rate limiting:**
 
@@ -196,36 +206,36 @@ The frontend uses **Next.js 14 App Router** with client-side state management:
 
 ```
 app/
-├── page.tsx                          # Root → redirect to /dashboard or /login
-├── layout.tsx                        # Root layout (StoreProvider, Toaster, TooltipProvider)
-├── error.tsx                         # Global error boundary page
-├── (auth)/
-│   ├── layout.tsx                    # Auth pages layout
-│   ├── login/page.tsx                # Login form
-│   └── register/page.tsx             # Registration form
-└── (dashboard)/
-    ├── layout.tsx                    # Auth guard, Sidebar + Header shell, ErrorBoundary
-    ├── loading.tsx                   # Route-level skeleton loading
-    ├── error.tsx                     # Route-level error recovery
-    ├── dashboard/page.tsx            # Overview dashboard (live data, skeleton, error/retry)
-    ├── groups/page.tsx               # Groups list
-    ├── groups/[id]/page.tsx          # Group detail (expenses, balances, settlements)
-    ├── transactions/page.tsx         # Personal transactions
-    ├── budgets/page.tsx              # Budget management
-    ├── reports/page.tsx              # Spending reports
-    └── settings/page.tsx             # User settings
+â”œâ”€â”€ page.tsx                          # Root â†’ redirect to /dashboard or /login
+â”œâ”€â”€ layout.tsx                        # Root layout (StoreProvider, Toaster, TooltipProvider)
+â”œâ”€â”€ error.tsx                         # Global error boundary page
+â”œâ”€â”€ (auth)/
+â”‚   â”œâ”€â”€ layout.tsx                    # Auth pages layout
+â”‚   â”œâ”€â”€ login/page.tsx                # Login form
+â”‚   â””â”€â”€ register/page.tsx             # Registration form
+â””â”€â”€ (dashboard)/
+    â”œâ”€â”€ layout.tsx                    # Auth guard, Sidebar + Header shell, ErrorBoundary
+    â”œâ”€â”€ loading.tsx                   # Route-level skeleton loading
+    â”œâ”€â”€ error.tsx                     # Route-level error recovery
+    â”œâ”€â”€ dashboard/page.tsx            # Overview dashboard (live data, skeleton, error/retry)
+    â”œâ”€â”€ groups/page.tsx               # Groups list
+    â”œâ”€â”€ groups/[id]/page.tsx          # Group detail (expenses, balances, settlements)
+    â”œâ”€â”€ transactions/page.tsx         # Personal transactions
+    â”œâ”€â”€ budgets/page.tsx              # Budget management
+    â”œâ”€â”€ reports/page.tsx              # Spending reports
+    â””â”€â”€ settings/page.tsx             # User settings
 ```
 
 **State management:**
 
 - **Redux Toolkit** with `configureStore` combining RTK Query, auth slice, and UI slice
 - **RTK Query** (`apiSlice`) as the data-fetching layer with tag-based cache invalidation
-- **Auth flow:** `hydrateAuth` reads tokens from `localStorage` on mount → `isAuthenticated` + `hydrated` flags drive route guards
+- **Auth flow:** `hydrateAuth` reads tokens from `localStorage` on mount â†’ `isAuthenticated` + `hydrated` flags drive route guards
 
 **API communication:**
 
 1. RTK Query uses relative `/api/*` URLs
-2. `next.config.js` rewrites `/api/:path*` → `http://localhost:4000/api/:path*`
+2. `next.config.js` rewrites `/api/:path*` â†’ `http://localhost:4000/api/:path*`
 3. Base query injects `Authorization: Bearer <token>` header
 4. Custom `baseQueryWithReauth` strips the `{ success, data }` envelope and normalizes errors
 5. **Automatic token refresh:** On 401, the base query attempts a silent refresh using the stored refresh token before giving up. A mutex (`async-mutex`) prevents concurrent refresh attempts when multiple parallel requests fail simultaneously. If refresh succeeds, the original request is retried transparently. If refresh fails, credentials are cleared and the user is redirected to `/login`.
@@ -239,8 +249,8 @@ app/
 
 **SEO & Metadata**
 
-- **Root layout** — Default title and description for the app
-- **Per-page metadata** — Each page (login, register, dashboard, groups, group detail, transactions, budgets, reports, settings) exports `metadata` or `generateMetadata` with page-specific title, description, and OpenGraph tags for sharing
+- **Root layout** â€” Default title and description for the app
+- **Per-page metadata** â€” Each page (login, register, dashboard, groups, group detail, transactions, budgets, reports, settings) exports `metadata` or `generateMetadata` with page-specific title, description, and OpenGraph tags for sharing
 
 **Component organization:**
 
@@ -258,7 +268,7 @@ app/
 
 The shared package provides a **single source of truth** for validation and types consumed by both frontend and backend:
 
-**Types** (`src/types/`) — TypeScript interfaces for API contracts:
+**Types** (`src/types/`) â€” TypeScript interfaces for API contracts:
 
 | File             | Exports                                                                       |
 | ---------------- | ----------------------------------------------------------------------------- |
@@ -272,7 +282,7 @@ The shared package provides a **single source of truth** for validation and type
 | `budget.ts`      | `Budget`, `BudgetWithProgress`, `BudgetAlert`, `BudgetPeriod`                 |
 | `category.ts`    | `Category`, `SystemCategory`                                                  |
 
-**Schemas** (`src/schemas/`) — Zod validation schemas:
+**Schemas** (`src/schemas/`) â€” Zod validation schemas:
 
 | File                    | Exports                                                                                             |
 | ----------------------- | --------------------------------------------------------------------------------------------------- |
@@ -308,25 +318,25 @@ The shared package provides a **single source of truth** for validation and type
 PostgreSQL 16 with Prisma ORM. All IDs are UUIDs.
 
 ```
-┌──────────┐       ┌─────────────┐       ┌──────────┐
-│   User   │──────<│ GroupMember  │>──────│  Group   │
-└──────────┘       └─────────────┘       └──────────┘
-     │                                        │
-     │  ┌──────────────┐    ┌──────────────┐  │
-     ├─<│ ExpensePayer  │>──│   Expense     │>─┤
-     │  └──────────────┘    └──────────────┘  │
-     │  ┌──────────────┐         │            │
-     ├─<│ ExpenseSplit  │>───────┘            │
-     │  └──────────────┘                      │
-     │  ┌──────────────┐                      │
-     ├─<│  Settlement   │>────────────────────┘
-     │  └──────────────┘
-     │  ┌──────────────┐    ┌──────────────┐
-     ├─<│ Transaction   │>──│   Category   │
-     │  └──────────────┘    └──────────────┘
-     │  ┌──────────────┐         │
-     └─<│    Budget     │>───────┘
-        └──────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”       â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”       â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚   User   â”‚â”€â”€â”€â”€â”€â”€<â”‚ GroupMember  â”‚>â”€â”€â”€â”€â”€â”€â”‚  Group   â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜       â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜       â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+     â”‚                                        â”‚
+     â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”‚
+     â”œâ”€<â”‚ ExpensePayer  â”‚>â”€â”€â”‚   Expense     â”‚>â”€â”¤
+     â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â”‚
+     â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”         â”‚            â”‚
+     â”œâ”€<â”‚ ExpenseSplit  â”‚>â”€â”€â”€â”€â”€â”€â”€â”˜            â”‚
+     â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜                      â”‚
+     â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”                      â”‚
+     â”œâ”€<â”‚  Settlement   â”‚>â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+     â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+     â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”    â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+     â”œâ”€<â”‚ Transaction   â”‚>â”€â”€â”‚   Category   â”‚
+     â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜    â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+     â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”         â”‚
+     â””â”€<â”‚    Budget     â”‚>â”€â”€â”€â”€â”€â”€â”€â”˜
+        â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 **Models:**
@@ -363,10 +373,10 @@ All endpoints below are under `/api/v1`. Protected routes require `Authorization
 
 **Health** (no prefix, no auth)
 
-| Method | Path            | Description                                                                                  |
-| ------ | --------------- | -------------------------------------------------------------------------------------------- |
-| GET    | `/health`       | Liveness probe — returns `{ status: "ok" }`                                                  |
-| GET    | `/health/ready` | Readiness probe — checks Postgres + Redis, returns `{ status: "ready"\|"degraded", checks }` |
+| Method | Path            | Description                                                                                    |
+| ------ | --------------- | ---------------------------------------------------------------------------------------------- |
+| GET    | `/health`       | Liveness probe â€” returns `{ status: "ok" }`                                                  |
+| GET    | `/health/ready` | Readiness probe â€” checks Postgres + Redis, returns `{ status: "ready"\|"degraded", checks }` |
 
 **Auth** (`/api/v1/auth`)
 
@@ -469,20 +479,20 @@ All endpoints below are under `/api/v1`. Protected routes require `Authorization
 | GET    | `/summary`     | Transaction summary by period  |
 | GET    | `/by-category` | Spending breakdown by category |
 
-**CSRF** (`/api/v1/csrf-token`) — Optional for cookie-based or cross-origin form flows; JWT-only API clients can omit
+**CSRF** (`/api/v1/csrf-token`) â€” Optional for cookie-based or cross-origin form flows; JWT-only API clients can omit
 
 | Method | Path      | Auth | Description                                          |
 | ------ | --------- | ---- | ---------------------------------------------------- |
 | GET    | `/`       | No   | Get CSRF token (sets `__csrf` cookie, returns token) |
 | POST   | `/revoke` | Yes  | Revoke token on logout                               |
 
-**Features** (`/api/v1/features`) — Feature flags (Redis-cached, Prisma-backed)
+**Features** (`/api/v1/features`) â€” Feature flags (Redis-cached, Prisma-backed)
 
 | Method | Path | Auth | Description              |
 | ------ | ---- | ---- | ------------------------ |
 | GET    | `/`  | No   | List enabled feature IDs |
 
-**Webhooks** (`/api/v1/webhooks`) — Raw body required; no `express.json()` parsing
+**Webhooks** (`/api/v1/webhooks`) â€” Raw body required; no `express.json()` parsing
 
 | Method | Path      | Auth | Description                                                         |
 | ------ | --------- | ---- | ------------------------------------------------------------------- |
@@ -507,31 +517,31 @@ Available at `/graphql` (introspection enabled in development).
 
 Socket.IO server runs on the same HTTP server. Requires JWT auth via `socket.handshake.auth.token`.
 
-| Event                | Direction       | Description                             |
-| -------------------- | --------------- | --------------------------------------- |
-| `join_group`         | Client → Server | Join a group room for real-time updates |
-| `leave_group`        | Client → Server | Leave a group room                      |
-| `expense:created`    | Server → Group  | New expense added                       |
-| `expense:updated`    | Server → Group  | Expense modified                        |
-| `settlement:created` | Server → Group  | New settlement recorded                 |
+| Event                | Direction         | Description                             |
+| -------------------- | ----------------- | --------------------------------------- |
+| `join_group`         | Client â†’ Server | Join a group room for real-time updates |
+| `leave_group`        | Client â†’ Server | Leave a group room                      |
+| `expense:created`    | Server â†’ Group  | New expense added                       |
+| `expense:updated`    | Server â†’ Group  | Expense modified                        |
+| `settlement:created` | Server â†’ Group  | New settlement recorded                 |
 
 ---
 
 ## Features
 
-- **Group Expense Splitting** — Create groups, add expenses with multiple payers, split by equal/exact/percentage/shares
-- **Simplified Debts** — Minimize the number of transactions needed to settle up
-- **Personal Finance** — Track income and expenses with categories and accounts
-- **Budget Management** — Set category-based budgets with alert thresholds and period tracking
-- **Multi-Currency** — 20 supported currencies with base amount conversion
-- **AI-Powered** — Smart categorization via Anthropic Claude, natural language expense parsing, financial insights
-- **Real-Time Updates** — Socket.IO for live expense and settlement notifications
-- **Background Jobs** — BullMQ queues for notifications, reports, and debt calculations
-- **File Uploads** — S3 presigned URL workflow for receipt attachments
-- **Reports** — Spending summaries and category breakdowns
-- **Google OAuth** — Social login support (configurable)
-- **Responsive UI** — Mobile-friendly sidebar layout with Tailwind CSS
-- **Theme Management** — Light/dark/system themes with localStorage persistence and FOUC prevention
+- **Group Expense Splitting** â€” Create groups, add expenses with multiple payers, split by equal/exact/percentage/shares
+- **Simplified Debts** â€” Minimize the number of transactions needed to settle up
+- **Personal Finance** â€” Track income and expenses with categories and accounts
+- **Budget Management** â€” Set category-based budgets with alert thresholds and period tracking
+- **Multi-Currency** â€” 20 supported currencies with base amount conversion
+- **AI-Powered** â€” Smart categorization via Anthropic Claude, natural language expense parsing, financial insights
+- **Real-Time Updates** â€” Socket.IO for live expense and settlement notifications
+- **Background Jobs** â€” BullMQ queues for notifications, reports, and debt calculations
+- **File Uploads** â€” S3 presigned URL workflow for receipt attachments
+- **Reports** â€” Spending summaries and category breakdowns
+- **Google OAuth** â€” Social login support (configurable)
+- **Responsive UI** â€” Mobile-friendly sidebar layout with Tailwind CSS
+- **Theme Management** â€” Light/dark/system themes with localStorage persistence and FOUC prevention
 
 ---
 
@@ -576,20 +586,20 @@ All environment variables are validated at startup via a Zod schema. In **produc
 | `JWT_REFRESH_SECRET`      | **Yes**          | Auto-generated dev secret                                       | Secret for signing refresh tokens                                                    |
 | `FRONTEND_URL`            | No               | `http://localhost:3000`                                         | CORS origin                                                                          |
 | `PORT`                    | No               | `4000`                                                          | Backend server port                                                                  |
-| `ANTHROPIC_API_KEY`       | No               | —                                                               | Enables AI features (falls back to keyword matching)                                 |
-| `GOOGLE_CLIENT_ID`        | No               | —                                                               | Google OAuth client ID                                                               |
-| `GOOGLE_CLIENT_SECRET`    | No               | —                                                               | Google OAuth client secret                                                           |
-| `AWS_ACCESS_KEY_ID`       | No               | —                                                               | S3 file uploads                                                                      |
-| `AWS_SECRET_ACCESS_KEY`   | No               | —                                                               | S3 file uploads                                                                      |
+| `ANTHROPIC_API_KEY`       | No               | â€”                                                             | Enables AI features (falls back to keyword matching)                                 |
+| `GOOGLE_CLIENT_ID`        | No               | â€”                                                             | Google OAuth client ID                                                               |
+| `GOOGLE_CLIENT_SECRET`    | No               | â€”                                                             | Google OAuth client secret                                                           |
+| `AWS_ACCESS_KEY_ID`       | No               | â€”                                                             | S3 file uploads                                                                      |
+| `AWS_SECRET_ACCESS_KEY`   | No               | â€”                                                             | S3 file uploads                                                                      |
 | `S3_BUCKET`               | No               | `splitwise-uploads`                                             | S3 bucket name                                                                       |
 | `SMTP_HOST`               | No               | `smtp.gmail.com`                                                | Email sending                                                                        |
-| `SMTP_USER`               | No               | —                                                               | SMTP username                                                                        |
-| `SMTP_PASS`               | No               | —                                                               | SMTP password                                                                        |
+| `SMTP_USER`               | No               | â€”                                                             | SMTP username                                                                        |
+| `SMTP_PASS`               | No               | â€”                                                             | SMTP password                                                                        |
 | `RATE_LIMIT_WINDOW_MS`    | No               | `60000`                                                         | Rate limit window in milliseconds                                                    |
 | `RATE_LIMIT_MAX_REQUESTS` | No               | `100`                                                           | Max requests per window                                                              |
-| `SENTRY_DSN`              | No               | —                                                               | Sentry error tracking (enables server-side exception reporting)                      |
-| `STRIPE_SECRET_KEY`       | No               | —                                                               | Stripe API key (payments)                                                            |
-| `STRIPE_WEBHOOK_SECRET`   | No               | —                                                               | Stripe webhook signing secret (`whsec_...`); verifies `POST /api/v1/webhooks/stripe` |
+| `SENTRY_DSN`              | No               | â€”                                                             | Sentry error tracking (enables server-side exception reporting)                      |
+| `STRIPE_SECRET_KEY`       | No               | â€”                                                             | Stripe API key (payments)                                                            |
+| `STRIPE_WEBHOOK_SECRET`   | No               | â€”                                                             | Stripe webhook signing secret (`whsec_...`); verifies `POST /api/v1/webhooks/stripe` |
 
 ### Database Setup
 
@@ -610,7 +620,7 @@ npm run db:studio
 ### Running the App
 
 ```bash
-# Development — runs backend + frontend concurrently via Turborepo
+# Development â€” runs backend + frontend concurrently via Turborepo
 npm run dev
 
 # Or run individually
@@ -642,18 +652,18 @@ npm run docker:down
 | backend  | Multi-stage Node 20  | 4000 | Runs `prisma migrate deploy` on startup, non-root user |
 | frontend | Multi-stage Node 20  | 3000 | Next.js standalone build, non-root user                |
 
-Both Dockerfiles use multi-stage builds: install deps → build shared → build app → minimal production image. Both run as non-root users (`backend:nodejs` / `nextjs:nodejs`) for security.
+Both Dockerfiles use multi-stage builds: install deps â†’ build shared â†’ build app â†’ minimal production image. Both run as non-root users (`backend:nodejs` / `nextjs:nodejs`) for security.
 
 **Production Compose** (`docker-compose.prod.yml`)
 
 For production-like deployments:
 
-- **Docker secrets** — `postgres_password`, `redis_password`, `jwt_secret`, `jwt_refresh_secret` (file-based, not env vars)
-- **Resource limits** — CPU and memory limits/reservations for all services
-- **Restart policy** — `always` for all services
-- **Health checks** — All services have health checks with `start_period`; backend uses `/health/ready` for Postgres + Redis probes
-- **Log rotation** — `json-file` driver with max-size and max-file limits
-- **Redis password** — Redis configured with `requirepass` via secret
+- **Docker secrets** â€” `postgres_password`, `redis_password`, `jwt_secret`, `jwt_refresh_secret` (file-based, not env vars)
+- **Resource limits** â€” CPU and memory limits/reservations for all services
+- **Restart policy** â€” `always` for all services
+- **Health checks** â€” All services have health checks with `start_period`; backend uses `/health/ready` for Postgres + Redis probes
+- **Log rotation** â€” `json-file` driver with max-size and max-file limits
+- **Redis password** â€” Redis configured with `requirepass` via secret
 
 ```bash
 docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
@@ -670,7 +680,7 @@ Run from the repository root:
 | `npm run dev`          | Start all packages in development mode (Turborepo parallel)          |
 | `npm run dev:backend`  | Start backend only                                                   |
 | `npm run dev:frontend` | Start frontend only                                                  |
-| `npm run build`        | Build all packages (shared → backend → frontend, cached)             |
+| `npm run build`        | Build all packages (shared â†’ backend â†’ frontend, cached)         |
 | `npm run lint`         | Lint all packages                                                    |
 | `npm run lint:fix`     | Lint and auto-fix all packages                                       |
 | `npm run format`       | Format all files with Prettier                                       |
@@ -705,9 +715,9 @@ Configured at root (`.prettierrc`) with Tailwind CSS plugin for consistent class
 
 ### Testing
 
-- **Jest** — Backend unit tests with `ts-jest`, path aliases (`@/`, `@shared/`), and coverage thresholds (50%)
-- **Auth service** — 15 tests for register, login, refresh, logout, password reset (bcrypt, Redis, Prisma mocks)
-- **Expense splitting** — 25 tests for `splitEqually`, `splitByPercentage`, `splitByShares`, `roundMoney`, `formatCurrency`
+- **Jest** â€” Backend unit tests with `ts-jest`, path aliases (`@/`, `@shared/`), and coverage thresholds (50%)
+- **Auth service** â€” 15 tests for register, login, refresh, logout, password reset (bcrypt, Redis, Prisma mocks)
+- **Expense splitting** â€” 25 tests for `splitEqually`, `splitByPercentage`, `splitByShares`, `roundMoney`, `formatCurrency`
 
 ```bash
 npm run test              # Root: runs all package tests
@@ -746,7 +756,7 @@ Strict mode enabled via `tsconfig.base.json`:
 
 A set of enhancements applied to make the application production-ready across three priority tiers:
 
-### Priority 1 — Critical
+### Priority 1 â€” Critical
 
 | Item                           | Description                                                                                        |
 | ------------------------------ | -------------------------------------------------------------------------------------------------- |
@@ -756,7 +766,7 @@ A set of enhancements applied to make the application production-ready across th
 | **Dynamic dashboard**          | Live data from API, loading skeletons, error states, and retry                                     |
 | **Error handling**             | React ErrorBoundary, Next.js `error.tsx` (global + dashboard), `loading.tsx` for route transitions |
 
-### Priority 2 — Important
+### Priority 2 â€” Important
 
 | Item                      | Description                                                                                        |
 | ------------------------- | -------------------------------------------------------------------------------------------------- |
@@ -768,7 +778,7 @@ A set of enhancements applied to make the application production-ready across th
 | **Theme management**      | Light/dark/system with `localStorage` and FOUC prevention script                                   |
 | **Sentry**                | Backend error tracking; unhandled exceptions and `uncaughtException`/`unhandledRejection` captured |
 
-### Priority 3 — Nice-to-have
+### Priority 3 â€” Nice-to-have
 
 | Item                        | Description                                                                                                                    |
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
@@ -796,7 +806,7 @@ Additional production-ready enhancements applied to the API and security layer:
 | Convention          | Details                                                                                                         |
 | ------------------- | --------------------------------------------------------------------------------------------------------------- |
 | **Package naming**  | `@splitwise/<package>` scoped names                                                                             |
-| **Architecture**    | Controller → Service → Repository (backend)                                                                     |
+| **Architecture**    | Controller â†’ Service â†’ Repository (backend)                                                                 |
 | **Validation**      | Zod schemas in `@splitwise/shared`, used in both Express middleware and React Hook Form                         |
 | **Env validation**  | Zod schema validates all env vars at startup; fail-fast in production on missing critical vars                  |
 | **API responses**   | `{ success, data }` / `{ success, error: { code, message, details } }` envelope                                 |

@@ -68,6 +68,15 @@ const baseQueryWithUnwrap: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: baseQueryWithUnwrap,
-  tagTypes: ['User', 'Group', 'Expense', 'Settlement', 'Transaction', 'Budget', 'Category'],
+  tagTypes: [
+    'User',
+    'Group',
+    'Expense',
+    'Settlement',
+    'Transaction',
+    'Budget',
+    'Category',
+    'Household',
+  ],
   endpoints: () => ({}),
 });

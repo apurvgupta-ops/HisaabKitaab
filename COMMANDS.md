@@ -11,26 +11,31 @@
 ## Docker Commands
 
 ### Start databases (PostgreSQL + Redis)
+
 ```bash
 docker-compose up -d postgres redis
 ```
 
 ### Start all services (databases + backend + frontend)
+
 ```bash
 docker-compose up -d
 ```
 
 ### Stop all containers
+
 ```bash
 docker-compose down
 ```
 
 ### Stop and remove volumes (resets all data)
+
 ```bash
 docker-compose down -v
 ```
 
 ### View container logs
+
 ```bash
 docker-compose logs -f           # all services
 docker-compose logs -f postgres  # postgres only
@@ -40,17 +45,20 @@ docker-compose logs -f frontend  # frontend only
 ```
 
 ### Check running containers
+
 ```bash
 docker-compose ps
 ```
 
 ### Restart a specific service
+
 ```bash
 docker-compose restart postgres
 docker-compose restart redis
 ```
 
 ### Rebuild images (after code changes)
+
 ```bash
 docker-compose up -d --build backend
 docker-compose up -d --build frontend
@@ -61,20 +69,23 @@ docker-compose up -d --build frontend
 ## PostgreSQL Commands
 
 ### Connection details (local development)
-| Field    | Value                |
-|----------|----------------------|
-| Host     | localhost            |
-| Port     | 5433                 |
-| User     | splitwise            |
-| Password | splitwise_dev        |
-| Database | splitwise            |
+
+| Field    | Value         |
+| -------- | ------------- |
+| Host     | localhost     |
+| Port     | 5433          |
+| User     | splitwise     |
+| Password | splitwise_dev |
+| Database | splitwise     |
 
 ### Connect via psql (inside Docker)
+
 ```bash
 docker exec -it splitwise-postgres psql -U splitwise -d splitwise
 ```
 
 ### Common psql commands (run after connecting)
+
 ```sql
 \dt                          -- list all tables
 \d users                     -- describe users table
@@ -98,16 +109,19 @@ SELECT COUNT(*) FROM users;  -- count rows in a table
 ```
 
 ### Run raw SQL from host machine
+
 ```bash
 docker exec -it splitwise-postgres psql -U splitwise -d splitwise -c "SELECT * FROM users;"
 ```
 
 ### Export database dump
+
 ```bash
 docker exec splitwise-postgres pg_dump -U splitwise splitwise > backup.sql
 ```
 
 ### Import database dump
+
 ```bash
 docker exec -i splitwise-postgres psql -U splitwise splitwise < backup.sql
 ```
@@ -117,11 +131,13 @@ docker exec -i splitwise-postgres psql -U splitwise splitwise < backup.sql
 ## Redis Commands
 
 ### Connect to Redis CLI
+
 ```bash
 docker exec -it splitwise-redis redis-cli
 ```
 
 ### Common Redis commands (run after connecting)
+
 ```bash
 PING                         # should return PONG
 KEYS *                       # list all keys
@@ -136,6 +152,7 @@ QUIT                         # exit
 ```
 
 ### Run Redis command from host
+
 ```bash
 docker exec splitwise-redis redis-cli PING
 docker exec splitwise-redis redis-cli KEYS "*"
@@ -149,6 +166,7 @@ docker exec splitwise-redis redis-cli FLUSHALL
 All Prisma commands run from `packages/backend/`:
 
 ### Generate Prisma Client (after schema changes)
+
 ```bash
 npm run db:generate -w packages/backend
 # or
@@ -156,6 +174,7 @@ cd packages/backend && npx prisma generate
 ```
 
 ### Create and apply migrations (development)
+
 ```bash
 npm run db:migrate -w packages/backend
 # or
@@ -163,16 +182,19 @@ cd packages/backend && npx prisma migrate dev --name <migration_name>
 ```
 
 ### Apply migrations (production)
+
 ```bash
 cd packages/backend && npx prisma migrate deploy
 ```
 
 ### Reset database (drops all data + re-migrates)
+
 ```bash
 cd packages/backend && npx prisma migrate reset
 ```
 
 ### Seed database with demo data
+
 ```bash
 npm run db:seed -w packages/backend
 # or
@@ -180,6 +202,7 @@ cd packages/backend && npx tsx prisma/seed.ts
 ```
 
 ### Open Prisma Studio (visual DB browser at http://localhost:5555)
+
 ```bash
 npm run db:studio -w packages/backend
 # or
@@ -187,18 +210,45 @@ cd packages/backend && npx prisma studio
 ```
 
 ### View migration status
+
 ```bash
 cd packages/backend && npx prisma migrate status
 ```
 
+### Resolve a failed migration (mark as rolled back)
+
+```bash
+cd packages/backend && npx prisma migrate resolve --rolled-back "<migration_name>"
+```
+
+### Resolve a failed migration (mark as applied — use if you fixed the DB manually)
+
+```bash
+cd packages/backend && npx prisma migrate resolve --applied "<migration_name>"
+```
+
 ### Format Prisma schema file
+
 ```bash
 cd packages/backend && npx prisma format
 ```
 
+### Validate Prisma schema
+
+```bash
+cd packages/backend && npx prisma validate
+```
+
 ### Introspect existing database (generate schema from DB)
+
 ```bash
 cd packages/backend && npx prisma db pull
+```
+
+### Push schema changes directly (skips migration history — dev only)
+
+```bash
+cd packages/backend && npx prisma db push
 ```
 
 ---
@@ -206,45 +256,167 @@ cd packages/backend && npx prisma db pull
 ## NPM / Project Commands
 
 ### Install all dependencies
+
 ```bash
 npm install --legacy-peer-deps
 ```
 
-### Run development servers (backend + frontend)
+### Run development servers (backend + frontend via Turborepo)
+
 ```bash
 npm run dev
 ```
 
 ### Run backend only (http://localhost:4000)
+
 ```bash
-npm run dev:backend
+npm run dev -w packages/backend
 ```
 
 ### Run frontend only (http://localhost:3000)
+
 ```bash
-npm run dev:frontend
+npm run dev -w packages/frontend
 ```
 
-### Build all packages
+### Build all packages (Turborepo — cached + parallel)
+
 ```bash
 npm run build
 ```
 
 ### Build individual packages
+
 ```bash
-npm run build:shared
-npm run build:backend
-npm run build:frontend
+npm run build -w packages/shared
+npm run build -w packages/backend
+npm run build -w packages/frontend
 ```
 
 ### Run tests
+
 ```bash
 npm test
 ```
 
-### Lint code
+---
+
+## Turborepo Commands
+
+### Run any Turbo task directly
+
+```bash
+npx turbo run <task>          # e.g. npx turbo run build
+npx turbo run <task> --filter=<package>  # e.g. npx turbo run build --filter=@splitwise/backend
+```
+
+### View the Turbo task graph (visualize dependencies)
+
+```bash
+npx turbo run build --graph
+```
+
+### Force re-run ignoring cache
+
+```bash
+npx turbo run build --force
+```
+
+### Clean Turbo cache
+
+```bash
+rm -rf .turbo
+# or full clean (all node_modules + turbo cache)
+npm run clean
+```
+
+---
+
+## Linting & Formatting
+
+### Lint all packages
+
 ```bash
 npm run lint
+```
+
+### Lint and auto-fix
+
+```bash
+npm run lint:fix
+```
+
+### Type-check all packages
+
+```bash
+npm run typecheck
+```
+
+### Format all files with Prettier
+
+```bash
+npm run format
+```
+
+### Check formatting without writing
+
+```bash
+npm run format:check
+```
+
+### Lint a specific file
+
+```bash
+npx eslint packages/backend/src/server.ts
+npx eslint packages/frontend/src/app/layout.tsx
+```
+
+### Fix lint errors in a specific file
+
+```bash
+npx eslint --fix packages/backend/src/server.ts
+```
+
+---
+
+## Cache & Cleanup
+
+### Clean all build artifacts and caches
+
+```bash
+npm run clean
+```
+
+### Clean only Turbo cache
+
+```bash
+rm -rf .turbo
+```
+
+### Clean only Next.js cache
+
+```bash
+rm -rf packages/frontend/.next
+```
+
+### Clean only Prisma generated client
+
+```bash
+rm -rf node_modules/.prisma
+cd packages/backend && npx prisma generate
+```
+
+### Clean node_modules and reinstall
+
+```bash
+rm -rf node_modules packages/*/node_modules
+npm install --legacy-peer-deps
+```
+
+### Kill stuck dev server ports
+
+```bash
+npx kill-port 3000 4000
 ```
 
 ---
@@ -280,11 +452,13 @@ Health check: **http://localhost:4000/health**
 ## API Testing (curl examples)
 
 ### Health check
+
 ```bash
 curl http://localhost:4000/health
 ```
 
 ### Register a user
+
 ```bash
 curl -X POST http://localhost:4000/api/auth/register \
   -H "Content-Type: application/json" \
@@ -292,6 +466,7 @@ curl -X POST http://localhost:4000/api/auth/register \
 ```
 
 ### Login
+
 ```bash
 curl -X POST http://localhost:4000/api/auth/login \
   -H "Content-Type: application/json" \
@@ -299,12 +474,14 @@ curl -X POST http://localhost:4000/api/auth/login \
 ```
 
 ### Authenticated request (replace <TOKEN> with JWT from login response)
+
 ```bash
 curl http://localhost:4000/api/users/me \
   -H "Authorization: Bearer <TOKEN>"
 ```
 
 ### Create a group
+
 ```bash
 curl -X POST http://localhost:4000/api/groups \
   -H "Content-Type: application/json" \
@@ -316,28 +493,92 @@ curl -X POST http://localhost:4000/api/groups \
 
 ## Troubleshooting
 
+### Port 3000 or 4000 already in use
+
+```bash
+npx kill-port 3000 4000
+```
+
 ### Port 5432 already in use (local PostgreSQL conflict)
+
 The app uses port **5433** for Docker PostgreSQL to avoid conflicts with local PostgreSQL. If you change this, update:
+
 - `docker-compose.yml` (ports mapping)
 - `.env` (DATABASE_URL)
 - `packages/backend/.env` (DATABASE_URL)
 
 ### Prisma: "Environment variable not found: DATABASE_URL"
+
 Make sure `packages/backend/.env` exists with:
+
 ```
 DATABASE_URL=postgresql://splitwise:splitwise_dev@localhost:5433/splitwise
 ```
 
+### Prisma: "Unable to run script" in Prisma Studio
+
+Schema is out of sync with the database. Run:
+
+```bash
+cd packages/backend && npx prisma migrate status    # check what's wrong
+cd packages/backend && npx prisma migrate dev        # create + apply pending migrations
+```
+
+### Prisma: Failed migration blocking new migrations
+
+```bash
+# 1. Check migration status
+cd packages/backend && npx prisma migrate status
+
+# 2a. If you want to roll back the failed migration and retry:
+cd packages/backend && npx prisma migrate resolve --rolled-back "<migration_name>"
+cd packages/backend && npx prisma migrate dev --name <new_name>
+
+# 2b. If migration file is missing from disk, reset the database (dev only!):
+cd packages/backend && npx prisma migrate reset
+cd packages/backend && npx prisma migrate dev --name <migration_name>
+```
+
+### Prisma: "Redis is already connecting/connected"
+
+Redis client uses `lazyConnect: true`. The server checks `redis.status === 'wait'` before calling `redis.connect()`. If you see this error, check `packages/backend/src/server.ts` for duplicate `.connect()` calls.
+
 ### Docker containers not starting
+
 ```bash
 docker-compose down -v    # remove old volumes
 docker-compose up -d      # fresh start
 ```
 
+### ESLint / Prettier errors on commit (lint-staged)
+
+```bash
+# Fix all lint errors
+npm run lint:fix
+
+# Fix formatting
+npm run format
+
+# If plugins are missing
+npm install -D prettier-plugin-tailwindcss globals
+```
+
+### "Cannot find module '@splitwise/shared'"
+
+The shared package needs to be built first:
+
+```bash
+npm run build -w packages/shared
+# or let Turbo handle the dependency graph:
+npm run build
+```
+
 ### Reset everything (nuclear option)
+
 ```bash
 docker-compose down -v                              # remove containers + volumes
 rm -rf node_modules packages/*/node_modules         # remove all node_modules
+rm -rf .turbo packages/frontend/.next               # remove caches
 npm install --legacy-peer-deps                       # reinstall
 docker-compose up -d postgres redis                  # start fresh DBs
 cd packages/backend && npx prisma migrate dev        # re-create tables
