@@ -89,12 +89,12 @@ export const handleReceiptUpload = async (
       throw AppError.badRequest('No file uploaded');
     }
 
-    const { key, url } = await uploadToS3(
-      file.buffer,
-      file.originalname,
-      file.mimetype,
-      'receipts',
-    );
+    // const { key, url } = await uploadToS3(
+    //   file.buffer,
+    //   file.originalname,
+    //   file.mimetype,
+    //   'receipts',
+    // );
 
     const parsed = await parseReceiptWithAI(file.buffer, file.mimetype);
 
@@ -102,8 +102,8 @@ export const handleReceiptUpload = async (
       success: true,
       data: {
         upload: {
-          key,
-          url,
+          // key,
+          // url,
           filename: file.originalname,
           mimeType: file.mimetype,
           size: file.size,

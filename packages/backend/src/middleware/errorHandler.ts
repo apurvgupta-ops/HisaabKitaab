@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
 import { logger } from '../shared/logger';
+import { env } from '../config';
 
 export class AppError extends Error {
   public readonly statusCode: number;
@@ -59,7 +60,7 @@ const formatZodError = (error: ZodError): Record<string, string[]> => {
 
 export const errorHandler = (
   err: Error,
-  _req: Request,
+  req: Request,
   res: Response,
   _next: NextFunction,
 ): void => {
@@ -124,13 +125,25 @@ export const errorHandler = (
     return;
   }
 
-  logger.error({ err }, 'Unhandled error');
+  logger.error(
+    {
+      err,
+      request: {
+        method: req.method,
+        url: req.originalUrl,
+        params: req.params,
+        query: req.query,
+        body: req.body,
+      },
+    },
+    'Unhandled error',
+  );
 
   res.status(500).json({
     success: false,
     error: {
       code: 'INTERNAL_ERROR',
-      message: 'An unexpected error occurred',
+      message: env.isDev() ? err.message : 'An unexpected error occurred',
     },
   });
 };

@@ -1,0 +1,3338 @@
+openapi: 3.0.3
+info:
+  title: Splitwise API
+  description: |
+    A full-featured expense-splitting and personal finance API.
+    Supports group expense management, settlements, personal transactions,
+    budgets, AI-powered categorization, file uploads, reports, and more.
+
+    ## Authentication
+    Most endpoints require a **Bearer JWT** token in the `Authorization` header.
+    Obtain tokens via `/auth/register` or `/auth/login`. Access tokens expire in 15 minutes;
+    use `/auth/refresh` with your refresh token to obtain a new pair.
+
+    ## Rate Limiting
+    - **Global:** All `/api/*` routes are rate-limited (configurable window/max).
+    - **Auth:** Register and login are additionally limited to 20 requests per 15 minutes.
+
+    ## Response Format
+    - **Success:** `{ "success": true, "data": ... }`
+    - **Paginated:** `{ "success": true, "data": [...], "pagination": { ... } }`
+    - **Error:** `{ "success": false, "error": { "code": "...", "message": "...", "details": { ... } } }`
+  version: 1.0.0
+  contact:
+    name: Splitwise API
+  license:
+    name: MIT
+
+servers:
+  - url: /api/v1
+    description: API v1 (primary)
+  - url: /api
+    description: API (alias, same router)
+
+tags:
+  - name: Health
+    description: Health check
+  - name: Auth
+    description: Authentication & registration
+  - name: Users
+    description: User profile management
+  - name: Groups
+    description: Group CRUD & member management
+  - name: Expenses
+    description: Group expense management
+  - name: Settlements
+    description: Debt settlements between users
+  - name: Transactions
+    description: Personal income/expense tracking
+  - name: Budgets
+    description: Budget management & alerts
+  - name: Categories
+    description: Expense/transaction categories
+  - name: AI
+    description: AI-powered features
+  - name: Uploads
+    description: File uploads (S3)
+  - name: Reports
+    description: CSV exports & financial reports
+  - name: Features
+    description: Feature flags
+  - name: Reminders
+    description: Debt reminders & nudges
+  - name: Recurring
+    description: Recurring expenses
+  - name: Household
+    description: Household expense summaries
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Access token obtained from /auth/login or /auth/register
+
+  schemas:
+    # ─── Common ────────────────────────────────────────
+    SuccessMessage:
+      type: object
+      required: [success, data]
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          required: [message]
+          properties:
+            message:
+              type: string
+
+    PaginationMeta:
+      type: object
+      required: [page, limit, total, totalPages, hasNext, hasPrev]
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 42
+        totalPages:
+          type: integer
+          example: 3
+        hasNext:
+          type: boolean
+        hasPrev:
+          type: boolean
+
+    ErrorResponse:
+      type: object
+      required: [success, error]
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              example: BAD_REQUEST
+            message:
+              type: string
+              example: Validation failed
+            details:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+
+    ValidationError:
+      allOf:
+        - $ref: '#/components/schemas/ErrorResponse'
+      example:
+        success: false
+        error:
+          code: VALIDATION_ERROR
+          message: Validation failed
+          details:
+            email: ["Invalid email address"]
+
+    # ─── Auth ──────────────────────────────────────────
+    RegisterRequest:
+      type: object
+      required: [name, email, password]
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: John Doe
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        password:
+          type: string
+          minLength: 8
+          description: Must contain uppercase, lowercase, and a digit
+          example: MyP@ss1word
+        inviteToken:
+          type: string
+          format: uuid
+          description: Optional group invite token to auto-join on registration
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        password:
+          type: string
+          minLength: 1
+          example: MyP@ss1word
+
+    RefreshTokenRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+          minLength: 1
+
+    AuthTokens:
+      type: object
+      required: [accessToken, refreshToken, expiresIn]
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        expiresIn:
+          type: integer
+          description: Access token lifetime in seconds
+          example: 900
+
+    AuthResponse:
+      type: object
+      required: [success, data]
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          required: [user, tokens]
+          properties:
+            user:
+              $ref: '#/components/schemas/UserSummaryFull'
+            tokens:
+              $ref: '#/components/schemas/AuthTokens'
+
+    RefreshResponse:
+      type: object
+      required: [success, data]
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          required: [tokens]
+          properties:
+            tokens:
+              $ref: '#/components/schemas/AuthTokens'
+
+    PasswordResetRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+
+    PasswordResetConfirm:
+      type: object
+      required: [token, password]
+      properties:
+        token:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 8
+          description: Must contain uppercase, lowercase, and a digit
+
+    LogoutRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+
+    InviteDetails:
+      type: object
+      properties:
+        token:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        group:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+        expiresAt:
+          type: string
+          format: date-time
+
+    # ─── User ──────────────────────────────────────────
+    UserSummaryFull:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        avatar:
+          type: string
+          nullable: true
+        preferredCurrency:
+          type: string
+          example: USD
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        avatar:
+          type: string
+          nullable: true
+        preferredCurrency:
+          type: string
+        preferences:
+          $ref: '#/components/schemas/UserPreferences'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UserPreferences:
+      type: object
+      properties:
+        theme:
+          type: string
+          enum: [light, dark, system]
+        language:
+          type: string
+        notifications:
+          $ref: '#/components/schemas/NotificationPreferences'
+        defaultSplitType:
+          type: string
+          enum: [equal, percentage, exact, shares]
+
+    NotificationPreferences:
+      type: object
+      properties:
+        email:
+          type: boolean
+        push:
+          type: boolean
+        sms:
+          type: boolean
+        expenseAdded:
+          type: boolean
+        settlementReceived:
+          type: boolean
+        budgetAlert:
+          type: boolean
+        weeklyReport:
+          type: boolean
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        avatar:
+          type: string
+          format: uri
+          nullable: true
+        preferredCurrency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          description: 3-letter ISO currency code
+          example: USD
+
+    UpdatePreferencesRequest:
+      type: object
+      properties:
+        theme:
+          type: string
+          enum: [light, dark, system]
+        language:
+          type: string
+          minLength: 2
+          maxLength: 5
+        notifications:
+          $ref: '#/components/schemas/NotificationPreferences'
+        defaultSplitType:
+          type: string
+          enum: [equal, percentage, exact, shares]
+
+    # ─── Group ─────────────────────────────────────────
+    GroupSettings:
+      type: object
+      properties:
+        simplifyDebts:
+          type: boolean
+        defaultSplitType:
+          type: string
+          enum: [equal, percentage, exact, shares]
+        allowSettlements:
+          type: boolean
+
+    CreateGroupRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: Trip to Paris
+        type:
+          type: string
+          enum: [trip, home, couple, project, other]
+          default: other
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          default: USD
+        settings:
+          $ref: '#/components/schemas/GroupSettings'
+
+    UpdateGroupRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        type:
+          type: string
+          enum: [trip, home, couple, project, other]
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        settings:
+          $ref: '#/components/schemas/GroupSettings'
+
+    Group:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        type:
+          type: string
+          enum: [trip, home, couple, project, other]
+        currency:
+          type: string
+        settings:
+          $ref: '#/components/schemas/GroupSettings'
+        createdBy:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    GroupMember:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        groupId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        role:
+          type: string
+          enum: [admin, member]
+        joinedAt:
+          type: string
+          format: date-time
+        user:
+          $ref: '#/components/schemas/UserSummaryFull'
+
+    GroupWithMembers:
+      allOf:
+        - $ref: '#/components/schemas/Group'
+        - type: object
+          properties:
+            members:
+              type: array
+              items:
+                $ref: '#/components/schemas/GroupMember'
+
+    AddMemberRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [admin, member]
+          default: member
+
+    UpdateMemberRoleRequest:
+      type: object
+      required: [role]
+      properties:
+        role:
+          type: string
+          enum: [admin, member]
+
+    GroupBalance:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        userName:
+          type: string
+        balance:
+          type: number
+
+    DebtEdge:
+      type: object
+      properties:
+        from:
+          type: string
+          format: uuid
+        fromName:
+          type: string
+        to:
+          type: string
+          format: uuid
+        toName:
+          type: string
+        amount:
+          type: number
+
+    GroupBalanceSummary:
+      type: object
+      properties:
+        groupId:
+          type: string
+          format: uuid
+        balances:
+          type: array
+          items:
+            $ref: '#/components/schemas/GroupBalance'
+        simplifiedDebts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DebtEdge'
+        totalExpenses:
+          type: number
+
+    # ─── Expense ───────────────────────────────────────
+    Payer:
+      type: object
+      required: [userId, amount]
+      properties:
+        userId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          minimum: 0.01
+          multipleOf: 0.01
+
+    Split:
+      type: object
+      required: [userId]
+      properties:
+        userId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          minimum: 0.01
+          multipleOf: 0.01
+        percentage:
+          type: number
+          minimum: 0
+          maximum: 100
+        shares:
+          type: integer
+          minimum: 1
+
+    RecurringConfig:
+      type: object
+      required: [frequency, interval]
+      properties:
+        frequency:
+          type: string
+          enum: [daily, weekly, monthly, yearly]
+        interval:
+          type: integer
+          minimum: 1
+          maximum: 365
+        endDate:
+          type: string
+          format: date-time
+          nullable: true
+
+    CreateExpenseRequest:
+      type: object
+      required: [groupId, amount, description, splitType, payers, splits]
+      properties:
+        groupId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          minimum: 0.01
+          multipleOf: 0.01
+          example: 120.50
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          default: USD
+        description:
+          type: string
+          minLength: 1
+          maxLength: 500
+          example: Dinner at restaurant
+        splitType:
+          type: string
+          enum: [equal, percentage, exact, shares]
+        categoryId:
+          type: string
+          format: uuid
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+            maxLength: 50
+          maxItems: 10
+        date:
+          type: string
+          format: date-time
+        payers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payer'
+          minItems: 1
+          description: Payer amounts must sum to the expense amount
+        splits:
+          type: array
+          items:
+            $ref: '#/components/schemas/Split'
+          minItems: 1
+        isRecurring:
+          type: boolean
+          default: false
+        recurringConfig:
+          $ref: '#/components/schemas/RecurringConfig'
+
+    UpdateExpenseRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+          minimum: 0.01
+          multipleOf: 0.01
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        description:
+          type: string
+          minLength: 1
+          maxLength: 500
+        splitType:
+          type: string
+          enum: [equal, percentage, exact, shares]
+        categoryId:
+          type: string
+          format: uuid
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+            maxLength: 50
+          maxItems: 10
+        date:
+          type: string
+          format: date-time
+        payers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payer'
+          minItems: 1
+        splits:
+          type: array
+          items:
+            $ref: '#/components/schemas/Split'
+          minItems: 1
+
+    ExpenseAttachment:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        filename:
+          type: string
+        mimeType:
+          type: string
+        size:
+          type: integer
+
+    ExpensePayer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        expenseId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+        user:
+          $ref: '#/components/schemas/UserSummaryFull'
+
+    ExpenseSplit:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        expenseId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+        percentage:
+          type: number
+          nullable: true
+        shares:
+          type: integer
+          nullable: true
+        user:
+          $ref: '#/components/schemas/UserSummaryFull'
+
+    CategorySummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        icon:
+          type: string
+        color:
+          type: string
+
+    Expense:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        groupId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+        currency:
+          type: string
+        amountInBase:
+          type: number
+        description:
+          type: string
+        splitType:
+          type: string
+          enum: [equal, percentage, exact, shares]
+        categoryId:
+          type: string
+          format: uuid
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExpenseAttachment'
+        isRecurring:
+          type: boolean
+        recurringConfig:
+          $ref: '#/components/schemas/RecurringConfig'
+        createdBy:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        payers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExpensePayer'
+        splits:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExpenseSplit'
+        category:
+          $ref: '#/components/schemas/CategorySummary'
+        creator:
+          $ref: '#/components/schemas/UserSummaryFull'
+
+    # ─── Settlement ────────────────────────────────────
+    CreateSettlementRequest:
+      type: object
+      required: [groupId, toUserId, amount]
+      properties:
+        groupId:
+          type: string
+          format: uuid
+        toUserId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          minimum: 0.01
+          multipleOf: 0.01
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          default: USD
+        paymentMethod:
+          type: string
+          enum: [cash, bank_transfer, upi, stripe, razorpay, other]
+          nullable: true
+        note:
+          type: string
+          maxLength: 500
+          nullable: true
+
+    UpdateSettlementStatusRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [confirmed, rejected]
+
+    Settlement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        groupId:
+          type: string
+          format: uuid
+        fromUserId:
+          type: string
+          format: uuid
+        toUserId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+        currency:
+          type: string
+        status:
+          type: string
+          enum: [pending, confirmed, rejected]
+        paymentMethod:
+          type: string
+          nullable: true
+        paymentDetails:
+          type: object
+          nullable: true
+        note:
+          type: string
+          nullable: true
+        settledAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    SettlementWithUsers:
+      allOf:
+        - $ref: '#/components/schemas/Settlement'
+        - type: object
+          properties:
+            fromUser:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                name:
+                  type: string
+                avatar:
+                  type: string
+                  nullable: true
+            toUser:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                name:
+                  type: string
+                avatar:
+                  type: string
+                  nullable: true
+
+    # ─── Transaction ───────────────────────────────────
+    CreateTransactionRequest:
+      type: object
+      required: [type, amount, description, account]
+      properties:
+        type:
+          type: string
+          enum: [income, expense]
+        amount:
+          type: number
+          minimum: 0.01
+          multipleOf: 0.01
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+          default: USD
+        description:
+          type: string
+          minLength: 1
+          maxLength: 500
+        categoryId:
+          type: string
+          format: uuid
+          nullable: true
+        account:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: Checking Account
+        date:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+          additionalProperties: true
+
+    UpdateTransactionRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [income, expense]
+        amount:
+          type: number
+          minimum: 0.01
+          multipleOf: 0.01
+        currency:
+          type: string
+          minLength: 3
+          maxLength: 3
+        description:
+          type: string
+          minLength: 1
+          maxLength: 500
+        categoryId:
+          type: string
+          format: uuid
+          nullable: true
+        account:
+          type: string
+          minLength: 1
+          maxLength: 100
+        date:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+          additionalProperties: true
+
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [income, expense]
+        amount:
+          type: number
+        currency:
+          type: string
+        description:
+          type: string
+        categoryId:
+          type: string
+          format: uuid
+          nullable: true
+        account:
+          type: string
+        metadata:
+          type: object
+        date:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CategoryBreakdown:
+      type: object
+      properties:
+        categoryId:
+          type: string
+        categoryName:
+          type: string
+        total:
+          type: number
+        count:
+          type: integer
+        percentage:
+          type: number
+
+    AccountBreakdown:
+      type: object
+      properties:
+        account:
+          type: string
+        balance:
+          type: number
+        income:
+          type: number
+        expenses:
+          type: number
+
+    TransactionSummary:
+      type: object
+      properties:
+        totalIncome:
+          type: number
+        totalExpenses:
+          type: number
+        netBalance:
+          type: number
+        byCategory:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryBreakdown'
+        byAccount:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountBreakdown'
+
+    # ─── Budget ────────────────────────────────────────
+    CreateBudgetRequest:
+      type: object
+      required: [limitAmount, period]
+      properties:
+        categoryId:
+          type: string
+          format: uuid
+          nullable: true
+        limitAmount:
+          type: number
+          minimum: 0.01
+          multipleOf: 0.01
+        period:
+          type: string
+          enum: [weekly, monthly, yearly]
+        alertThreshold:
+          type: number
+          minimum: 0
+          maximum: 1
+          default: 0.8
+          description: Fraction (0-1) at which to trigger an alert
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+          nullable: true
+
+    UpdateBudgetRequest:
+      type: object
+      properties:
+        categoryId:
+          type: string
+          format: uuid
+          nullable: true
+        limitAmount:
+          type: number
+          minimum: 0.01
+          multipleOf: 0.01
+        period:
+          type: string
+          enum: [weekly, monthly, yearly]
+        alertThreshold:
+          type: number
+          minimum: 0
+          maximum: 1
+        endDate:
+          type: string
+          format: date-time
+          nullable: true
+
+    Budget:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        categoryId:
+          type: string
+          format: uuid
+          nullable: true
+        limitAmount:
+          type: number
+        period:
+          type: string
+          enum: [weekly, monthly, yearly]
+        alertThreshold:
+          type: number
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    BudgetWithProgress:
+      allOf:
+        - $ref: '#/components/schemas/Budget'
+        - type: object
+          properties:
+            spent:
+              type: number
+            remaining:
+              type: number
+            percentage:
+              type: number
+            isOverBudget:
+              type: boolean
+            categoryName:
+              type: string
+              nullable: true
+            categoryIcon:
+              type: string
+              nullable: true
+
+    BudgetAlert:
+      type: object
+      properties:
+        budgetId:
+          type: string
+          format: uuid
+        categoryName:
+          type: string
+        limitAmount:
+          type: number
+        spent:
+          type: number
+        percentage:
+          type: number
+        message:
+          type: string
+
+    # ─── Category ──────────────────────────────────────
+    CreateCategoryRequest:
+      type: object
+      required: [name, icon, color]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: Food & Dining
+        icon:
+          type: string
+          minLength: 1
+          maxLength: 50
+          example: utensils
+        color:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          example: '#FF6B6B'
+        parentId:
+          type: string
+          format: uuid
+          nullable: true
+
+    UpdateCategoryRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        icon:
+          type: string
+          minLength: 1
+          maxLength: 50
+        color:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        icon:
+          type: string
+        color:
+          type: string
+        parentId:
+          type: string
+          format: uuid
+          nullable: true
+        userId:
+          type: string
+          format: uuid
+          nullable: true
+        isSystem:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    # ─── AI ────────────────────────────────────────────
+    CategorizeRequest:
+      type: object
+      required: [description, amount]
+      properties:
+        description:
+          type: string
+          example: Uber ride to airport
+        amount:
+          type: number
+          example: 25.50
+        currency:
+          type: string
+          example: USD
+
+    ParseExpenseRequest:
+      type: object
+      required: [text]
+      properties:
+        text:
+          type: string
+          example: I paid $50 for dinner with Alice and Bob last Friday
+
+    ChatRequest:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          example: How much did I spend on food this month?
+        history:
+          type: array
+          items:
+            type: object
+            required: [role, content]
+            properties:
+              role:
+                type: string
+                example: user
+              content:
+                type: string
+
+    # ─── Upload ────────────────────────────────────────
+    UploadResult:
+      type: object
+      properties:
+        key:
+          type: string
+        url:
+          type: string
+          format: uri
+        filename:
+          type: string
+        mimeType:
+          type: string
+        size:
+          type: integer
+
+    ReceiptUploadResult:
+      type: object
+      properties:
+        upload:
+          type: object
+          properties:
+            filename:
+              type: string
+            mimeType:
+              type: string
+            size:
+              type: integer
+        receipt:
+          type: object
+          description: AI-parsed receipt data
+
+    # ─── Feature Flags ─────────────────────────────────
+    FeatureFlags:
+      type: object
+      additionalProperties:
+        type: boolean
+      example:
+        darkMode: true
+        aiChat: false
+
+  parameters:
+    UuidId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    GroupId:
+      name: groupId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    UserId:
+      name: userId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    StartDate:
+      name: startDate
+      in: query
+      schema:
+        type: string
+        format: date-time
+    EndDate:
+      name: endDate
+      in: query
+      schema:
+        type: string
+        format: date-time
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: UNAUTHORIZED
+              message: Unauthorized
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ValidationError:
+      description: Request validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+    TooManyRequests:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+paths:
+  # ━━━ Health ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /health:
+    servers:
+      - url: /
+    get:
+      tags: [Health]
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  # ━━━ Auth ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new user
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login with email and password
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Refresh access token
+      operationId: refreshToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: Tokens refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          description: Invalid or expired refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout (invalidate refresh token)
+      operationId: logout
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+      responses:
+        '200':
+          description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/password-reset/request:
+    post:
+      tags: [Auth]
+      summary: Request a password reset email
+      operationId: requestPasswordReset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+      responses:
+        '200':
+          description: Reset email sent (always returns 200 to prevent enumeration)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /auth/password-reset/confirm:
+    post:
+      tags: [Auth]
+      summary: Confirm password reset with token
+      operationId: confirmPasswordReset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirm'
+      responses:
+        '200':
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+        '400':
+          description: Invalid or expired token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/invites/{token}:
+    get:
+      tags: [Auth]
+      summary: Get group invite details
+      operationId: getInviteDetails
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Invite details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/InviteDetails'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /auth/google:
+    get:
+      tags: [Auth]
+      summary: Initiate Google OAuth (not implemented)
+      operationId: googleAuth
+      responses:
+        '501':
+          description: Not implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/google/callback:
+    get:
+      tags: [Auth]
+      summary: Google OAuth callback (not implemented)
+      operationId: googleAuthCallback
+      responses:
+        '501':
+          description: Not implemented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ━━━ Users ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Get current user profile
+      operationId: getProfile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    put:
+      tags: [Users]
+      summary: Update user profile
+      operationId: updateProfile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      tags: [Users]
+      summary: Delete user account
+      operationId: deleteAccount
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Account deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /users/me/preferences:
+    patch:
+      tags: [Users]
+      summary: Update user preferences
+      operationId: updatePreferences
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePreferencesRequest'
+      responses:
+        '200':
+          description: Updated profile with new preferences
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ━━━ Groups ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /groups:
+    get:
+      tags: [Groups]
+      summary: List groups the user belongs to
+      operationId: getUserGroups
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of groups
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GroupWithMembers'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags: [Groups]
+      summary: Create a new group
+      operationId: createGroup
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGroupRequest'
+      responses:
+        '201':
+          description: Group created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/GroupWithMembers'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /groups/{id}:
+    get:
+      tags: [Groups]
+      summary: Get a group by ID
+      operationId: getGroupById
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      responses:
+        '200':
+          description: Group details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/GroupWithMembers'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Groups]
+      summary: Update a group (admin only)
+      operationId: updateGroup
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateGroupRequest'
+      responses:
+        '200':
+          description: Updated group
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/GroupWithMembers'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Groups]
+      summary: Delete a group (admin only)
+      operationId: deleteGroup
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      responses:
+        '200':
+          description: Group deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /groups/{id}/members:
+    post:
+      tags: [Groups]
+      summary: Add a member to a group by email (admin only)
+      operationId: addMember
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddMemberRequest'
+      responses:
+        '200':
+          description: Member added or invite sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /groups/{id}/members/{userId}:
+    delete:
+      tags: [Groups]
+      summary: Remove a member from a group (admin only)
+      operationId: removeMember
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Member removed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /groups/{id}/members/{userId}/role:
+    patch:
+      tags: [Groups]
+      summary: Update a member's role (admin only)
+      operationId: updateMemberRole
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMemberRoleRequest'
+      responses:
+        '200':
+          description: Role updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/GroupWithMembers'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  # ━━━ Expenses ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /expenses:
+    post:
+      tags: [Expenses]
+      summary: Create a new expense
+      operationId: createExpense
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateExpenseRequest'
+      responses:
+        '201':
+          description: Expense created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Expense'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /expenses/group/{groupId}:
+    get:
+      tags: [Expenses]
+      summary: List expenses for a group (paginated, filterable)
+      operationId: getGroupExpenses
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+        - name: categoryId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/StartDate'
+        - $ref: '#/components/parameters/EndDate'
+        - name: minAmount
+          in: query
+          schema:
+            type: number
+            minimum: 0
+        - name: maxAmount
+          in: query
+          schema:
+            type: number
+            minimum: 0
+        - name: search
+          in: query
+          schema:
+            type: string
+            maxLength: 200
+        - name: splitType
+          in: query
+          schema:
+            type: string
+            enum: [equal, percentage, exact, shares]
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [date, amount, createdAt]
+            default: date
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Paginated expense list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Expense'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /expenses/group/{groupId}/balances:
+    get:
+      tags: [Expenses]
+      summary: Get group balances
+      operationId: getGroupBalances
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      responses:
+        '200':
+          description: Group balance summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/GroupBalanceSummary'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /expenses/{id}:
+    get:
+      tags: [Expenses]
+      summary: Get an expense by ID
+      operationId: getExpense
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      responses:
+        '200':
+          description: Expense details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Expense'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Expenses]
+      summary: Update an expense
+      operationId: updateExpense
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateExpenseRequest'
+      responses:
+        '200':
+          description: Updated expense
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Expense'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Expenses]
+      summary: Delete an expense
+      operationId: deleteExpense
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      responses:
+        '200':
+          description: Expense deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ━━━ Settlements ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /settlements:
+    post:
+      tags: [Settlements]
+      summary: Create a new settlement
+      operationId: createSettlement
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSettlementRequest'
+      responses:
+        '201':
+          description: Settlement created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/SettlementWithUsers'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /settlements/group/{groupId}:
+    get:
+      tags: [Settlements]
+      summary: List settlements for a group
+      operationId: getGroupSettlements
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      responses:
+        '200':
+          description: Group settlements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SettlementWithUsers'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /settlements/group/{groupId}/simplified:
+    get:
+      tags: [Settlements]
+      summary: Get simplified debts for a group
+      operationId: getSimplifiedDebts
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      responses:
+        '200':
+          description: Simplified debt edges
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DebtEdge'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /settlements/me:
+    get:
+      tags: [Settlements]
+      summary: Get current user's settlements
+      operationId: getUserSettlements
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User settlements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SettlementWithUsers'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /settlements/{id}/status:
+    patch:
+      tags: [Settlements]
+      summary: Confirm or reject a settlement
+      operationId: updateSettlementStatus
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSettlementStatusRequest'
+      responses:
+        '200':
+          description: Settlement status updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/SettlementWithUsers'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ━━━ Transactions ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /transactions:
+    get:
+      tags: [Transactions]
+      summary: List personal transactions (paginated, filterable)
+      operationId: getTransactions
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [income, expense]
+        - name: categoryId
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: account
+          in: query
+          schema:
+            type: string
+            maxLength: 100
+        - $ref: '#/components/parameters/StartDate'
+        - $ref: '#/components/parameters/EndDate'
+        - name: minAmount
+          in: query
+          schema:
+            type: number
+            minimum: 0
+        - name: maxAmount
+          in: query
+          schema:
+            type: number
+            minimum: 0
+        - name: search
+          in: query
+          schema:
+            type: string
+            maxLength: 200
+        - name: sortBy
+          in: query
+          schema:
+            type: string
+            enum: [date, amount, createdAt]
+            default: date
+        - name: sortOrder
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Paginated transaction list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transaction'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags: [Transactions]
+      summary: Create a personal transaction
+      operationId: createTransaction
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTransactionRequest'
+      responses:
+        '201':
+          description: Transaction created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Transaction'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /transactions/summary:
+    get:
+      tags: [Transactions]
+      summary: Get transaction summary (income, expenses, by category/account)
+      operationId: getTransactionSummary
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/StartDate'
+        - $ref: '#/components/parameters/EndDate'
+      responses:
+        '200':
+          description: Transaction summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/TransactionSummary'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /transactions/{id}:
+    get:
+      tags: [Transactions]
+      summary: Get a transaction by ID
+      operationId: getTransactionById
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      responses:
+        '200':
+          description: Transaction details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Transaction'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Transactions]
+      summary: Update a transaction
+      operationId: updateTransaction
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTransactionRequest'
+      responses:
+        '200':
+          description: Updated transaction
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Transaction'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Transactions]
+      summary: Delete a transaction
+      operationId: deleteTransaction
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      responses:
+        '200':
+          description: Transaction deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ━━━ Budgets ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /budgets:
+    get:
+      tags: [Budgets]
+      summary: List all budgets (with progress)
+      operationId: getBudgets
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Budget list with progress
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BudgetWithProgress'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags: [Budgets]
+      summary: Create a new budget
+      operationId: createBudget
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBudgetRequest'
+      responses:
+        '201':
+          description: Budget created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Budget'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /budgets/alerts:
+    get:
+      tags: [Budgets]
+      summary: Get budget alerts
+      operationId: getBudgetAlerts
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Budget alerts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BudgetAlert'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /budgets/{id}:
+    get:
+      tags: [Budgets]
+      summary: Get a budget by ID
+      operationId: getBudgetById
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      responses:
+        '200':
+          description: Budget details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/BudgetWithProgress'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Budgets]
+      summary: Update a budget
+      operationId: updateBudget
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBudgetRequest'
+      responses:
+        '200':
+          description: Updated budget
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Budget'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Budgets]
+      summary: Delete a budget
+      operationId: deleteBudget
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      responses:
+        '200':
+          description: Budget deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ━━━ Categories ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /categories:
+    get:
+      tags: [Categories]
+      summary: List categories (system + user-created)
+      operationId: getCategories
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Category list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      tags: [Categories]
+      summary: Create a custom category
+      operationId: createCategory
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCategoryRequest'
+      responses:
+        '201':
+          description: Category created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Category'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /categories/{id}:
+    put:
+      tags: [Categories]
+      summary: Update a category
+      operationId: updateCategory
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCategoryRequest'
+      responses:
+        '200':
+          description: Updated category
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Category'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Categories]
+      summary: Delete a category
+      operationId: deleteCategory
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UuidId'
+      responses:
+        '200':
+          description: Category deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ━━━ AI ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /ai/categorize:
+    post:
+      tags: [AI]
+      summary: AI-categorize an expense description
+      operationId: categorizeExpense
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategorizeRequest'
+      responses:
+        '200':
+          description: Categorization result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    description: Category suggestion with confidence score
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /ai/parse:
+    post:
+      tags: [AI]
+      summary: Parse a natural-language expense description
+      operationId: parseNaturalLanguageExpense
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParseExpenseRequest'
+      responses:
+        '200':
+          description: Parsed expense data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    description: Structured expense fields parsed from text
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /ai/insights:
+    get:
+      tags: [AI]
+      summary: Get AI-generated financial insights
+      operationId: getFinancialInsights
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Financial insights
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    description: AI-generated spending insights and recommendations
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /ai/chat:
+    post:
+      tags: [AI]
+      summary: Chat with the AI financial assistant
+      operationId: chatWithAssistant
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: Chat response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    description: AI assistant response
+        '400':
+          description: Message is required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ━━━ Uploads ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /uploads:
+    post:
+      tags: [Uploads]
+      summary: Upload a single file
+      operationId: uploadSingle
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: "Allowed: jpeg, png, gif, webp, pdf. Max 10MB."
+      responses:
+        '201':
+          description: File uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/UploadResult'
+        '400':
+          description: No file, file too large, or invalid type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /uploads/multiple:
+    post:
+      tags: [Uploads]
+      summary: Upload multiple files (max 5)
+      operationId: uploadMultiple
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [files]
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  maxItems: 5
+                  description: "Max 5 files, 10MB each. Allowed: jpeg, png, gif, webp, pdf."
+      responses:
+        '201':
+          description: Files uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UploadResult'
+        '400':
+          description: No files, too many files, file too large, or invalid type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /uploads/receipt:
+    post:
+      tags: [Uploads]
+      summary: Upload and parse a receipt
+      operationId: uploadReceipt
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Receipt image or PDF (max 10MB)
+      responses:
+        '201':
+          description: Receipt uploaded and parsed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/ReceiptUploadResult'
+        '400':
+          description: No file or invalid type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ━━━ Reports ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /reports/groups/{groupId}/csv:
+    get:
+      tags: [Reports]
+      summary: Export group expenses as CSV
+      operationId: exportGroupCSV
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - $ref: '#/components/parameters/StartDate'
+        - $ref: '#/components/parameters/EndDate'
+        - name: categoryId
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: CSV file
+          content:
+            text/csv:
+              schema:
+                type: string
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+                example: attachment; filename="expenses-{groupId}.csv"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /reports/transactions/csv:
+    get:
+      tags: [Reports]
+      summary: Export personal transactions as CSV
+      operationId: exportTransactionsCSV
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/StartDate'
+        - $ref: '#/components/parameters/EndDate'
+        - name: categoryId
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: CSV file
+          content:
+            text/csv:
+              schema:
+                type: string
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+                example: attachment; filename="transactions.csv"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /reports/groups/{groupId}/summary:
+    get:
+      tags: [Reports]
+      summary: Get group expense report summary
+      operationId: getExpenseReport
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+      responses:
+        '200':
+          description: Expense report
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    description: Aggregated expense report for the group
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /reports/financial:
+    get:
+      tags: [Reports]
+      summary: Generate a personal financial report
+      operationId: getFinancialReport
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: startDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Financial report
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    description: Comprehensive financial report
+        '400':
+          description: startDate and endDate are required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ━━━ Features ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /features:
+    get:
+      tags: [Features]
+      summary: Get evaluated feature flags for the current user
+      operationId: getFeatures
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Feature flags map
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/FeatureFlags'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ━━━ Reminders ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /reminders/pending:
+    get:
+      tags: [Reminders]
+      summary: Get pending debts to remind about
+      operationId: getPendingDebts
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Pending debts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      description: Pending debt details
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /reminders/nudge/{settlementId}:
+    post:
+      tags: [Reminders]
+      summary: Send a nudge reminder for a settlement
+      operationId: sendNudge
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: settlementId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Nudge sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    properties:
+                      sent:
+                        type: boolean
+                      message:
+                        type: string
+        '400':
+          description: Cannot nudge (already confirmed, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ━━━ Recurring ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /recurring:
+    get:
+      tags: [Recurring]
+      summary: List recurring expenses for the current user
+      operationId: getRecurringExpenses
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Recurring expenses
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Expense'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ━━━ Household ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /household/{groupId}/summary:
+    get:
+      tags: [Household]
+      summary: Get household expense summary for a group
+      operationId: getHouseholdSummary
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/GroupId'
+        - name: month
+          in: query
+          description: "Month filter (e.g. '2024-03')"
+          schema:
+            type: string
+            example: '2024-03'
+      responses:
+        '200':
+          description: Household summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: object
+                    description: Household expense breakdown for the group/month
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'

@@ -1,11 +1,7 @@
 import { Router, type IRouter } from 'express';
 import { authenticate } from '../../middleware';
 import { uploadSingle, uploadMultiple } from '../../shared/services/upload';
-import {
-  handleUpload,
-  handleMultipleUpload,
-  handleReceiptUpload,
-} from './upload.controller';
+import { handleUpload, handleMultipleUpload, handleReceiptUpload } from './upload.controller';
 
 const router: IRouter = Router();
 

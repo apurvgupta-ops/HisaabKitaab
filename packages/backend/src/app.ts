@@ -1,7 +1,10 @@
+import path from 'path';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
 import { env } from './config';
 import { errorHandler, apiLimiter } from './middleware';
 import { logger } from './shared/logger';
@@ -29,6 +32,19 @@ app.use((req, _res, next) => {
 });
 
 app.use('/api', apiLimiter);
+
+const swaggerDocument = YAML.load(path.join(__dirname, '..', 'swagger.yaml'));
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument, {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'Splitwise API Docs',
+  }),
+);
+app.get('/api-docs/openapi.json', (_req, res) => {
+  res.json(swaggerDocument);
+});
 
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

@@ -38,6 +38,7 @@
     "prettier": "^3.4.0",
     "prettier-plugin-tailwindcss": "0.7.2",
     "rimraf": "^6.0.0",
+    "swagger-ui-cli": "0.0.11",
     "turbo": "^2.8.0",
     "typescript": "^5.7.0"
   },

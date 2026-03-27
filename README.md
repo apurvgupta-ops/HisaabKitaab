@@ -1,4 +1,4 @@
-﻿# Splitwise
+# Splitwise
 
 Production-grade expense splitting and money management application built as a TypeScript monorepo.
 
@@ -370,6 +370,8 @@ All REST endpoints are versioned under **`/api/v1`**. Legacy `/api` paths are su
 ### REST Endpoints
 
 All endpoints below are under `/api/v1`. Protected routes require `Authorization: Bearer <token>`.
+
+> **Interactive docs:** Full request/response schemas, bodies, and query parameters are available via **Swagger UI** at [`/api-docs`](/api-docs) or in the [`packages/backend/swagger.yaml`](packages/backend/swagger.yaml) OpenAPI 3.0.3 spec.
 
 **Health** (no prefix, no auth)
 

@@ -1,4 +1,9 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+  GetObjectCommand,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { env } from '../../config';
 import { v4 as uuidv4 } from 'uuid';
@@ -11,6 +16,14 @@ const s3Client = new S3Client({
   },
 });
 
+const assertS3Config = (): void => {
+  if (!env.aws.s3Bucket || !env.aws.accessKeyId || !env.aws.secretAccessKey) {
+    throw new Error(
+      'S3 is not configured. Please set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and S3_BUCKET in .env',
+    );
+  }
+};
+
 /**
  * Uploads a file buffer to S3 and returns the object key.
  */
@@ -18,8 +31,10 @@ export const uploadToS3 = async (
   buffer: Buffer,
   originalName: string,
   mimeType: string,
-  folder = 'uploads'
+  folder = 'uploads',
 ): Promise<{ key: string; url: string }> => {
+  assertS3Config();
+
   const ext = originalName.split('.').pop() ?? 'bin';
   const key = `${folder}/${uuidv4()}.${ext}`;
 
@@ -29,7 +44,7 @@ export const uploadToS3 = async (
       Key: key,
       Body: buffer,
       ContentType: mimeType,
-    })
+    }),
   );
 
   const url = `https://${env.aws.s3Bucket}.s3.${env.aws.region}.amazonaws.com/${key}`;
@@ -41,7 +56,7 @@ export const deleteFromS3 = async (key: string): Promise<void> => {
     new DeleteObjectCommand({
       Bucket: env.aws.s3Bucket,
       Key: key,
-    })
+    }),
   );
 };
 
